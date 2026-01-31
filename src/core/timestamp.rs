@@ -8,7 +8,9 @@ use serde::{Deserialize, Serialize};
 ///
 /// Real-world data often has varying levels of temporal precision.
 /// This enum captures how precise a timestamp is.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default,
+)]
 #[serde(rename_all = "lowercase")]
 pub enum TemporalPrecision {
     /// Year only (e.g., "2024")

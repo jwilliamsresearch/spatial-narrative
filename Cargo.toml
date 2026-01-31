@@ -2,7 +2,7 @@
 name = "spatial-narrative"
 version = "0.1.0"
 edition = "2021"
-authors = ["Your Name <your.email@example.com>"]
+authors = ["James Williams"]
 description = "A Rust library for representing, analyzing, and working with narratives that unfold across real-world geographic space"
 license = "MIT"
 repository = "https://github.com/jwilliamsresearch/spatial-narrative"
