@@ -100,10 +100,7 @@ fn main() {
         "Total distance: {:.2} km",
         trajectory.total_distance() / 1000.0
     );
-    println!(
-        "Duration: {:.1} hours",
-        trajectory.duration_secs() / 3600.0
-    );
+    println!("Duration: {:.1} hours", trajectory.duration_secs() / 3600.0);
     println!(
         "Average speed: {:.1} km/h",
         trajectory.avg_speed() * 3.6 // m/s to km/h

@@ -188,7 +188,8 @@ impl SpatialMetrics {
         let mut max = 0.0_f64;
 
         for window in locations.windows(2) {
-            let dist = haversine_distance(window[0].lat, window[0].lon, window[1].lat, window[1].lon);
+            let dist =
+                haversine_distance(window[0].lat, window[0].lon, window[1].lat, window[1].lon);
             total += dist;
             max = max.max(dist);
         }
@@ -344,8 +345,18 @@ pub fn density_map(events: &[Event], rows: usize, cols: usize) -> Vec<DensityCel
             let cell_lon = bounds.min_lon + (col as f64 + 0.5) * lon_step;
 
             // Approximate cell area
-            let width_m = haversine_distance(cell_lat, bounds.min_lon, cell_lat, bounds.min_lon + lon_step);
-            let height_m = haversine_distance(bounds.min_lat, cell_lon, bounds.min_lat + lat_step, cell_lon);
+            let width_m = haversine_distance(
+                cell_lat,
+                bounds.min_lon,
+                cell_lat,
+                bounds.min_lon + lon_step,
+            );
+            let height_m = haversine_distance(
+                bounds.min_lat,
+                cell_lon,
+                bounds.min_lat + lat_step,
+                cell_lon,
+            );
             let area_km2 = (width_m * height_m) / 1_000_000.0;
 
             let density = if area_km2 > 0.0 {

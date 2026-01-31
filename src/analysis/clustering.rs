@@ -222,8 +222,7 @@ impl DBSCAN {
                 .map(|(i, _)| i)
                 .collect();
 
-            let cluster_events: Vec<&Event> =
-                event_indices.iter().map(|&i| &events[i]).collect();
+            let cluster_events: Vec<&Event> = event_indices.iter().map(|&i| &events[i]).collect();
 
             let centroid = compute_centroid(&cluster_events);
             let bounds = compute_bounds(&cluster_events);
@@ -392,8 +391,7 @@ impl KMeans {
                 continue;
             }
 
-            let cluster_events: Vec<&Event> =
-                event_indices.iter().map(|&i| &events[i]).collect();
+            let cluster_events: Vec<&Event> = event_indices.iter().map(|&i| &events[i]).collect();
 
             let centroid = centroid.clone();
             let bounds = compute_bounds(&cluster_events);

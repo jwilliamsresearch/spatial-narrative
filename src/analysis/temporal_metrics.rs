@@ -304,7 +304,10 @@ pub fn detect_bursts(events: &[Event], window_secs: f64, min_events: usize) -> V
     let mut sorted: Vec<_> = events.iter().collect();
     sorted.sort_by_key(|e| e.timestamp.to_unix_millis());
 
-    let timestamps: Vec<i64> = sorted.iter().map(|e| e.timestamp.to_unix_millis()).collect();
+    let timestamps: Vec<i64> = sorted
+        .iter()
+        .map(|e| e.timestamp.to_unix_millis())
+        .collect();
 
     let mut bursts = Vec::new();
     let mut i = 0;

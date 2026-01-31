@@ -5,7 +5,9 @@
 //!
 //! Run with: `cargo run --example temporal_analysis`
 
-use spatial_narrative::analysis::{detect_bursts, detect_gaps, event_rate, TemporalMetrics, TimeBin};
+use spatial_narrative::analysis::{
+    detect_bursts, detect_gaps, event_rate, TemporalMetrics, TimeBin,
+};
 use spatial_narrative::core::{Event, Location, Narrative, Timestamp};
 
 fn main() {
@@ -141,7 +143,10 @@ fn main() {
         let end_ms = gap.end.to_unix_millis();
         let duration_hours = (end_ms - start_ms) as f64 / 3_600_000.0;
 
-        println!("  {} → {} ({:.1} hours)", gap.start, gap.end, duration_hours);
+        println!(
+            "  {} → {} ({:.1} hours)",
+            gap.start, gap.end, duration_hours
+        );
     }
 
     // === Burst Detection ===

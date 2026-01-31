@@ -138,9 +138,18 @@ fn main() {
         println!("  West: {:.4}°", bounds.min_lon);
     }
 
-    println!("Average distance between stops: {:.2} km", metrics.avg_distance / 1000.0);
-    println!("Max distance between stops: {:.2} km", metrics.max_distance / 1000.0);
-    println!("Dispersion from centroid: {:.2} km", metrics.dispersion / 1000.0);
+    println!(
+        "Average distance between stops: {:.2} km",
+        metrics.avg_distance / 1000.0
+    );
+    println!(
+        "Max distance between stops: {:.2} km",
+        metrics.max_distance / 1000.0
+    );
+    println!(
+        "Dispersion from centroid: {:.2} km",
+        metrics.dispersion / 1000.0
+    );
 
     // === Density Map ===
     println!("\n🗺️ Density Map");
@@ -159,11 +168,7 @@ fn main() {
             Timestamp::now(),
             "Empire State",
         ),
-        Event::new(
-            Location::new(40.7614, -73.9776),
-            Timestamp::now(),
-            "MoMA",
-        ),
+        Event::new(Location::new(40.7614, -73.9776), Timestamp::now(), "MoMA"),
         Event::new(
             Location::new(40.7527, -73.9772),
             Timestamp::now(),

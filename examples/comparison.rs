@@ -6,9 +6,8 @@
 //! Run with: `cargo run --example comparison`
 
 use spatial_narrative::analysis::{
-    common_locations, compare_narratives, spatial_intersection, spatial_similarity,
-    spatial_union, temporal_similarity, thematic_similarity, ComparisonConfig,
-    NarrativeSimilarity,
+    common_locations, compare_narratives, spatial_intersection, spatial_similarity, spatial_union,
+    temporal_similarity, thematic_similarity, ComparisonConfig, NarrativeSimilarity,
 };
 use spatial_narrative::core::{Event, Location, Narrative, Timestamp};
 
@@ -160,7 +159,10 @@ fn main() {
     println!("{}", separator);
 
     let intersection = spatial_intersection(&alice, &bob, 500.0);
-    println!("Spatial Intersection: {} events from Alice", intersection.len());
+    println!(
+        "Spatial Intersection: {} events from Alice",
+        intersection.len()
+    );
     for e in &intersection {
         println!("  - {}", e.text);
     }
@@ -179,7 +181,7 @@ fn main() {
 
     // Create comparison config
     let config = ComparisonConfig {
-        spatial_weight: 0.5,      // Prioritize spatial similarity
+        spatial_weight: 0.5, // Prioritize spatial similarity
         temporal_weight: 0.3,
         thematic_weight: 0.2,
         location_threshold_m: 300.0, // Tighter tolerance
@@ -226,10 +228,7 @@ fn main() {
     let temporal_result = compare_narratives(&alice, &bob, &temporal_focus);
     let thematic_result = compare_narratives(&alice, &bob, &thematic_focus);
 
-    println!(
-        "Spatial-only score: {:.1}%",
-        spatial_result.overall * 100.0
-    );
+    println!("Spatial-only score: {:.1}%", spatial_result.overall * 100.0);
     println!(
         "Temporal-only score: {:.1}%",
         temporal_result.overall * 100.0

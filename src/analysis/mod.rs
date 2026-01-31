@@ -4,13 +4,13 @@
 //! including spatial metrics, temporal metrics, clustering,
 //! and movement analysis.
 //!
-//! # Modules
+//! # Features
 //!
-//! - [`spatial_metrics`] - Geographic extent, distance, dispersion
-//! - [`temporal_metrics`] - Duration, event rate, gaps, bursts
-//! - [`movement`] - Trajectory extraction and analysis
-//! - [`clustering`] - DBSCAN, k-means clustering
-//! - [`comparison`] - Narrative similarity and comparison
+//! - **Spatial Metrics** - Geographic extent, distance, dispersion ([`SpatialMetrics`])
+//! - **Temporal Metrics** - Duration, event rate, gaps, bursts ([`TemporalMetrics`])
+//! - **Movement** - Trajectory extraction and analysis ([`Trajectory`], [`detect_stops`])
+//! - **Clustering** - DBSCAN, k-means clustering ([`DBSCAN`], [`KMeans`])
+//! - **Comparison** - Narrative similarity and comparison ([`compare_narratives`])
 //!
 //! # Examples
 //!
@@ -53,11 +53,10 @@ mod spatial_metrics;
 mod temporal_metrics;
 
 // Re-export main types
-pub use clustering::{Cluster, ClusteringResult, DBSCAN, KMeans};
+pub use clustering::{Cluster, ClusteringResult, KMeans, DBSCAN};
 pub use comparison::{
-    common_locations, compare_narratives, spatial_intersection, spatial_similarity,
-    spatial_union, temporal_similarity, thematic_similarity, ComparisonConfig,
-    NarrativeSimilarity,
+    common_locations, compare_narratives, spatial_intersection, spatial_similarity, spatial_union,
+    temporal_similarity, thematic_similarity, ComparisonConfig, NarrativeSimilarity,
 };
 pub use movement::{detect_stops, MovementAnalyzer, Stop, StopThreshold, Trajectory};
 pub use spatial_metrics::{
@@ -66,4 +65,3 @@ pub use spatial_metrics::{
 pub use temporal_metrics::{
     detect_bursts, detect_gaps, event_rate, TemporalMetrics, TimeBin, TimeBinCount,
 };
-

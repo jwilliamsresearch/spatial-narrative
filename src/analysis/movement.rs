@@ -135,9 +135,9 @@ impl Trajectory {
                     w[1].location.lat,
                     w[1].location.lon,
                 );
-                let time_diff =
-                    (w[1].timestamp.to_unix_millis() - w[0].timestamp.to_unix_millis()) as f64
-                        / 1000.0;
+                let time_diff = (w[1].timestamp.to_unix_millis() - w[0].timestamp.to_unix_millis())
+                    as f64
+                    / 1000.0;
 
                 let speed = if time_diff > 0.0 {
                     dist / time_diff
@@ -165,8 +165,10 @@ impl Trajectory {
         }
 
         let indices = douglas_peucker_indices(&self.events, epsilon);
-        let simplified_events: Vec<Event> =
-            indices.into_iter().map(|i| self.events[i].clone()).collect();
+        let simplified_events: Vec<Event> = indices
+            .into_iter()
+            .map(|i| self.events[i].clone())
+            .collect();
 
         Trajectory::new(format!("{}_simplified", self.id), simplified_events)
     }
@@ -206,7 +208,7 @@ pub struct StopThreshold {
 impl Default for StopThreshold {
     fn default() -> Self {
         Self {
-            radius_m: 50.0,        // 50 meters
+            radius_m: 50.0,           // 50 meters
             min_duration_secs: 300.0, // 5 minutes
         }
     }
@@ -422,8 +424,7 @@ impl MovementAnalyzer {
                 .unwrap_or(events.len());
 
             if stop_start_idx > current_start {
-                let segment_events: Vec<Event> =
-                    events[current_start..stop_start_idx].to_vec();
+                let segment_events: Vec<Event> = events[current_start..stop_start_idx].to_vec();
                 if !segment_events.is_empty() {
                     segments.push(Trajectory::new(
                         format!("{}_segment_{}", trajectory.id, i),

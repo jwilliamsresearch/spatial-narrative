@@ -209,11 +209,7 @@ fn compute_time_range(events: &[Event]) -> Option<TimeRange> {
 /// Find events that occur near the same location in both narratives.
 ///
 /// Returns pairs of event indices (index in n1, index in n2).
-pub fn common_locations(
-    n1: &Narrative,
-    n2: &Narrative,
-    threshold_m: f64,
-) -> Vec<(usize, usize)> {
+pub fn common_locations(n1: &Narrative, n2: &Narrative, threshold_m: f64) -> Vec<(usize, usize)> {
     let mut pairs = Vec::new();
 
     for (i, e1) in n1.events().iter().enumerate() {
@@ -355,8 +351,18 @@ mod tests {
 
     #[test]
     fn test_thematic_similarity() {
-        let events1 = vec![make_event(0.0, 0.0, "2024-01-01T10:00:00Z", &["politics", "protest"])];
-        let events2 = vec![make_event(0.0, 0.0, "2024-01-01T10:00:00Z", &["protest", "march"])];
+        let events1 = vec![make_event(
+            0.0,
+            0.0,
+            "2024-01-01T10:00:00Z",
+            &["politics", "protest"],
+        )];
+        let events2 = vec![make_event(
+            0.0,
+            0.0,
+            "2024-01-01T10:00:00Z",
+            &["protest", "march"],
+        )];
 
         let sim = thematic_similarity(&events1, &events2);
         assert!(sim > 0.0);
@@ -366,7 +372,12 @@ mod tests {
     #[test]
     fn test_compare_narratives() {
         let events1 = vec![make_event(40.0, -74.0, "2024-01-01T10:00:00Z", &["news"])];
-        let events2 = vec![make_event(40.001, -74.001, "2024-01-01T11:00:00Z", &["news"])];
+        let events2 = vec![make_event(
+            40.001,
+            -74.001,
+            "2024-01-01T11:00:00Z",
+            &["news"],
+        )];
 
         let n1 = NarrativeBuilder::new().events(events1).build();
         let n2 = NarrativeBuilder::new().events(events2).build();

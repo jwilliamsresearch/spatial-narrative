@@ -5,7 +5,7 @@
 //!
 //! Run with: `cargo run --example clustering`
 
-use spatial_narrative::analysis::{ClusteringResult, DBSCAN, KMeans};
+use spatial_narrative::analysis::{ClusteringResult, KMeans, DBSCAN};
 use spatial_narrative::core::{Event, Location, Timestamp};
 
 fn main() {
