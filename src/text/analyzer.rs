@@ -133,8 +133,8 @@ impl TextAnalyzer {
             "just", "should", "now", "also", "into", "could", "would", "there", "their", "been",
             "being", "having", "does", "did", "doing", "about", "above", "after", "before",
             "below", "between", "during", "under", "again", "further", "then", "once", "here",
-            "any", "if", "or", "because", "until", "while", "through", "over", "up", "down",
-            "out", "off", "her", "him", "his", "she", "your", "you", "we", "me", "my", "our",
+            "any", "if", "or", "because", "until", "while", "through", "over", "up", "down", "out",
+            "off", "her", "him", "his", "she", "your", "you", "we", "me", "my", "our",
         ]
         .into_iter()
         .map(String::from)
@@ -147,8 +147,13 @@ impl TextAnalyzer {
             let name = cap.get(2).unwrap().as_str();
 
             entities.push(
-                Entity::new(name, EntityType::Person, full_match.start(), full_match.end())
-                    .with_confidence(0.9),
+                Entity::new(
+                    name,
+                    EntityType::Person,
+                    full_match.start(),
+                    full_match.end(),
+                )
+                .with_confidence(0.9),
             );
         }
     }
@@ -205,8 +210,8 @@ impl TextAnalyzer {
                 // Check word boundaries
                 let valid_start =
                     abs_pos == 0 || !text.chars().nth(abs_pos - 1).unwrap().is_alphanumeric();
-                let valid_end = end_pos >= text.len()
-                    || !text.chars().nth(end_pos).unwrap().is_alphanumeric();
+                let valid_end =
+                    end_pos >= text.len() || !text.chars().nth(end_pos).unwrap().is_alphanumeric();
 
                 if valid_start && valid_end {
                     let overlaps = entities
@@ -281,8 +286,8 @@ impl TextAnalyzer {
                 // Check word boundaries
                 let valid_start =
                     abs_pos == 0 || !text.chars().nth(abs_pos - 1).unwrap().is_alphanumeric();
-                let valid_end = end_pos >= text.len()
-                    || !text.chars().nth(end_pos).unwrap().is_alphanumeric();
+                let valid_end =
+                    end_pos >= text.len() || !text.chars().nth(end_pos).unwrap().is_alphanumeric();
 
                 if valid_start && valid_end {
                     let overlaps = entities
@@ -559,7 +564,8 @@ mod tests {
     #[test]
     fn test_entity_extraction_numerics() {
         let analyzer = TextAnalyzer::new();
-        let text = "The earthquake killed 50 people and injured 200. Damage estimated at $5 million.";
+        let text =
+            "The earthquake killed 50 people and injured 200. Damage estimated at $5 million.";
 
         let entities = analyzer.entities(text);
 

@@ -218,7 +218,7 @@
 - [x] DOT format export for visualization (`to_dot()`, `to_dot_with_options()`)
 - [x] JSON export of graph structure (`to_json()`, `to_json_pretty()`)
 - [x] `DotOptions` for customizing DOT output
-- [x] Node coloring by connectivity (roots, leaves, hubs)
+- [x] Node coloring by connectivity (roots, leaves, hubs).
 
 ### Testing
 - [x] Unit tests for graph construction

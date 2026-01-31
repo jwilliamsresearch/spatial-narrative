@@ -232,8 +232,8 @@ impl GeoParser {
                 // Check word boundaries
                 let valid_start =
                     abs_pos == 0 || !text.chars().nth(abs_pos - 1).unwrap().is_alphanumeric();
-                let valid_end = end_pos >= text.len()
-                    || !text.chars().nth(end_pos).unwrap().is_alphanumeric();
+                let valid_end =
+                    end_pos >= text.len() || !text.chars().nth(end_pos).unwrap().is_alphanumeric();
 
                 if valid_start && valid_end {
                     // Check for overlap with existing mentions

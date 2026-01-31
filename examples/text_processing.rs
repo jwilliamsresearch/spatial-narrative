@@ -74,7 +74,7 @@ fn main() {
             EntityType::DateTime => dates.push(entity),
             EntityType::Numeric => numerics.push(entity),
             EntityType::Location => locations.push(entity),
-            _ => {}
+            _ => {},
         }
     }
 
@@ -128,12 +128,7 @@ fn main() {
     let phrases = extractor_phrases.extract(narrative, 5);
     println!("\nTop 5 Terms (with bigrams):");
     for (i, phrase) in phrases.iter().enumerate() {
-        println!(
-            "  {}. {} (score: {:.3})",
-            i + 1,
-            phrase.text,
-            phrase.score
-        );
+        println!("  {}. {} (score: {:.3})", i + 1, phrase.text, phrase.score);
     }
 
     // =========================================
