@@ -15,7 +15,7 @@
 
 **A Rust library for modeling, indexing, analyzing, and transforming spatial narratives — sequences of events anchored in both space and time.**
 
-[📖 Documentation](https://docs.rs/spatial-narrative) · [🚀 Getting Started](#quick-start) · [📦 Crates.io](https://crates.io/crates/spatial-narrative) · [💬 Discussions](https://github.com/yourusername/spatial-narrative/discussions)
+[📖 Documentation](https://docs.rs/spatial-narrative) · [🚀 Getting Started](#quick-start) · [📦 Crates.io](https://crates.io/crates/spatial-narrative) · [💬 Discussions](https://github.com/jwilliamsresearch/spatial-narrative/discussions)
 
 </div>
 

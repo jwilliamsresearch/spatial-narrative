@@ -243,64 +243,75 @@
 **Goal**: Analytical capabilities
 
 ### Spatial Metrics
-- [ ] Implement `SpatialMetrics` struct
-- [ ] `bounds()` - geographic extent
-- [ ] `total_distance()` - sum of event-to-event distances
-- [ ] `dispersion()` - variance from centroid
-- [ ] `centroid()` - geographic center of mass
-- [ ] `density_map()` - events per unit area
+- [x] Implement `SpatialMetrics` struct
+- [x] `bounds()` - geographic extent
+- [x] `total_distance()` - sum of event-to-event distances
+- [x] `dispersion()` - variance from centroid
+- [x] `centroid()` - geographic center of mass
+- [x] `density_map()` - events per unit area
+- [x] `haversine_distance()` - distance between two points
+- [x] `bearing()` - initial bearing between points
+- [x] `destination_point()` - point at distance/bearing
 
 ### Temporal Metrics
-- [ ] Implement `TemporalMetrics` struct
-- [ ] `duration()` - total narrative duration
-- [ ] `event_rate()` - events over time (binned)
-- [ ] `inter_event_times()` - gaps between events
-- [ ] `temporal_clusters()` - detect time-based clusters
+- [x] Implement `TemporalMetrics` struct
+- [x] `duration()` - total narrative duration
+- [x] `event_rate()` - events over time (binned)
+- [x] `inter_event_times()` - gaps between events
+- [x] `detect_bursts()` - detect time-based activity bursts
+- [x] `detect_gaps()` - find gaps in timeline
 
 ### Movement Analysis
-- [ ] Implement `MovementAnalyzer` struct
-- [ ] Implement `Trajectory` struct
-- [ ] Implement `Stop` struct
-- [ ] Implement `StopThreshold` configuration
-- [ ] `extract_trajectories()` - events → trajectories
-- [ ] `velocity_profile()` - speed over time
-- [ ] `detect_stops()` - stationary periods
-- [ ] `simplify()` - Douglas-Peucker simplification
+- [x] Implement `MovementAnalyzer` struct
+- [x] Implement `Trajectory` struct
+- [x] Implement `Stop` struct
+- [x] Implement `StopThreshold` configuration
+- [x] `extract_trajectory()` - events → trajectory
+- [x] `velocity_profile()` - speed over time
+- [x] `detect_stops()` - stationary periods
+- [x] `simplify()` - Douglas-Peucker simplification
+- [x] `movement_segments()` - extract movement between stops
 
 ### Clustering
-- [ ] Implement `SpatialClustering` struct
-- [ ] Implement `Cluster` result type
-- [ ] Implement `ClusterTree` for hierarchical results
-- [ ] `dbscan()` - density-based clustering
-- [ ] `kmeans()` - k-means with geographic distance
-- [ ] `hierarchical()` - hierarchical clustering
+- [x] Implement `DBSCAN` struct
+- [x] Implement `KMeans` struct
+- [x] Implement `Cluster` result type
+- [x] Implement `ClusteringResult` struct
+- [x] `dbscan.cluster()` - density-based clustering
+- [x] `kmeans.cluster()` - k-means with geographic distance
+- [ ] `hierarchical()` - hierarchical clustering (deferred)
 
 ### Comparison
-- [ ] Implement `NarrativeComparison` struct
-- [ ] `spatial_similarity()` - spatial overlap metric
-- [ ] `temporal_alignment()` - temporal alignment metric
-- [ ] `common_locations()` - shared locations within radius
+- [x] Implement `NarrativeSimilarity` struct
+- [x] Implement `ComparisonConfig` struct
+- [x] `compare_narratives()` - compute overall similarity
+- [x] `spatial_similarity()` - spatial overlap metric
+- [x] `temporal_similarity()` - temporal overlap metric
+- [x] `thematic_similarity()` - tag similarity metric
+- [x] `common_locations()` - shared locations within radius
+- [x] `spatial_intersection()` - events near shared locations
+- [x] `spatial_union()` - combined geographic bounds
 
 ### Parallel Processing
-- [ ] Integrate `rayon` for parallel operations
+- [ ] Integrate `rayon` for parallel operations (deferred)
 - [ ] Parallel clustering for large datasets
 - [ ] Parallel metric computation
 
 ### Testing
-- [ ] Unit tests for each spatial metric
-- [ ] Unit tests for each temporal metric
-- [ ] Unit tests for movement analysis
-- [ ] Unit tests for clustering algorithms
-- [ ] Unit tests for comparison functions
-- [ ] Benchmark tests for large datasets
+- [x] Unit tests for spatial metrics (5 tests)
+- [x] Unit tests for temporal metrics (5 tests)
+- [x] Unit tests for movement analysis (5 tests)
+- [x] Unit tests for clustering algorithms (6 tests)
+- [x] Unit tests for comparison functions (7 tests)
+- [ ] Benchmark tests for large datasets (deferred)
 - [ ] Accuracy tests against known results
 
 ### Documentation
-- [ ] Metric explanations and use cases
-- [ ] Algorithm descriptions
-- [ ] Performance guidance
+- [x] Module-level documentation with examples
+- [x] Rustdoc for all public types
+- [ ] Algorithm descriptions guide
 
-**Deliverable**: `spatial_narrative::analysis` module with benchmarks
+**Deliverable**: `spatial_narrative::analysis` module ✅ (28+ tests passing)
 
 ---
 
