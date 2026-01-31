@@ -1,0 +1,89 @@
+[package]
+name = "spatial-narrative"
+version = "1.0.0"
+edition = "2021"
+authors = ["Your Name <your.email@example.com>"]
+description = "A Rust library for representing, analyzing, and working with narratives that unfold across real-world geographic space"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/yourusername/spatial-narrative"
+documentation = "https://docs.rs/spatial-narrative"
+readme = "README.md"
+keywords = ["geospatial", "narrative", "geography", "gis", "analysis"]
+categories = ["science", "data-structures", "parsing"]
+
+[dependencies]
+# Geometric types and algorithms
+geo = "0.28"
+geo-types = "0.7"
+
+# Spatial indexing
+rstar = "0.12"
+
+# Date/time handling
+chrono = { version = "0.4", features = ["serde"] }
+chrono-tz = "0.10"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Graph algorithms
+petgraph = "0.6"
+
+# Parallel processing
+rayon = "1.10"
+
+# Error handling
+thiserror = "1.0"
+anyhow = "1.0"
+
+# Hashing (for IDs)
+uuid = { version = "1.10", features = ["v4", "serde"] }
+
+# CSV parsing
+csv = "1.3"
+
+# Regular expressions
+regex = "1.10"
+
+# Advanced projections (optional)
+proj = { version = "0.27", optional = true }
+
+# Natural language processing (optional)
+unicode-segmentation = { version = "1.11", optional = true }
+
+# GPX parsing (optional)
+gpx = { version = "0.10", optional = true }
+
+# SQLite backend (optional)
+rusqlite = { version = "0.31", optional = true, features = ["bundled"] }
+
+# HTTP client for geocoding services (optional)
+reqwest = { version = "0.12", optional = true, features = ["json"] }
+
+# Command-line interface (optional)
+clap = { version = "4.5", optional = true, features = ["derive"] }
+
+[dev-dependencies]
+criterion = "0.5"
+proptest = "1.4"
+tempfile = "3.10"
+
+[features]
+default = []
+cli = ["clap"]
+projections = ["proj"]
+nlp = ["unicode-segmentation"]
+gpx-support = ["gpx"]
+database = ["rusqlite"]
+geocoding = ["reqwest"]
+full = ["cli", "projections", "nlp", "gpx-support", "database", "geocoding"]
+
+# [[bench]]
+# name = "spatial_queries"
+# harness = false
+
+# CLI binary - uncomment when implementing Phase 7
+# [[bin]]
+# name = "sn"
+# required-features = ["cli"]
