@@ -51,6 +51,13 @@
 - [Clustering](./analysis/clustering.md)
 - [Comparison](./analysis/comparison.md)
 
+# Text Processing
+
+- [Overview](./text/overview.md)
+- [Geoparsing](./text/geoparser.md)
+- [Named Entity Recognition](./text/analyzer.md)
+- [Keyword Extraction](./text/keywords.md)
+
 # Cookbook
 
 - [Common Patterns](./cookbook/patterns.md)
