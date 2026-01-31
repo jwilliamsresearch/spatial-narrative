@@ -42,6 +42,15 @@
 - [Path Finding](./graph/pathfinding.md)
 - [Export & Visualization](./graph/export.md)
 
+# Analysis
+
+- [Overview](./analysis/overview.md)
+- [Spatial Metrics](./analysis/spatial.md)
+- [Temporal Metrics](./analysis/temporal.md)
+- [Movement Analysis](./analysis/movement.md)
+- [Clustering](./analysis/clustering.md)
+- [Comparison](./analysis/comparison.md)
+
 # Cookbook
 
 - [Common Patterns](./cookbook/patterns.md)

@@ -91,7 +91,7 @@ fn main() {
 
     // Determine cardinal direction
     let direction = match b {
-        b if b < 22.5 || b >= 337.5 => "North",
+        b if !(22.5..337.5).contains(&b) => "North",
         b if b < 67.5 => "Northeast",
         b if b < 112.5 => "East",
         b if b < 157.5 => "Southeast",

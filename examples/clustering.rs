@@ -13,7 +13,7 @@ fn main() {
 
     // Create events representing different activity clusters
     // Cluster 1: Coffee shops in Midtown Manhattan
-    let midtown_events = vec![
+    let midtown_events = [
         ("Starbucks 42nd St", 40.7549, -73.9840),
         ("Blue Bottle Coffee", 40.7560, -73.9830),
         ("Joe Coffee", 40.7545, -73.9850),
@@ -22,7 +22,7 @@ fn main() {
     ];
 
     // Cluster 2: Restaurants in SoHo
-    let soho_events = vec![
+    let soho_events = [
         ("Balthazar", 40.7228, -73.9984),
         ("The Dutch", 40.7235, -73.9990),
         ("Raoul's", 40.7230, -73.9978),
@@ -30,7 +30,7 @@ fn main() {
     ];
 
     // Cluster 3: Museums on Museum Mile
-    let museum_events = vec![
+    let museum_events = [
         ("Metropolitan Museum", 40.7794, -73.9632),
         ("Guggenheim", 40.7830, -73.9590),
         ("Neue Galerie", 40.7812, -73.9603),
@@ -38,7 +38,7 @@ fn main() {
     ];
 
     // Noise point (isolated)
-    let noise_events = vec![("Random spot in Brooklyn", 40.6892, -73.9857)];
+    let noise_events = [("Random spot in Brooklyn", 40.6892, -73.9857)];
 
     // Combine all events
     let mut events = Vec::new();

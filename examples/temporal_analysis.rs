@@ -202,7 +202,7 @@ fn main() {
             let ts_str = e.timestamp.to_string();
             let time_part = ts_str.split('T').nth(1).unwrap_or("00");
             let hour: u32 = time_part[..2].parse().unwrap_or(0);
-            hour >= 6 && hour < 12
+            (6..12).contains(&hour)
         })
         .count();
     let afternoon_count = events
@@ -211,7 +211,7 @@ fn main() {
             let ts_str = e.timestamp.to_string();
             let time_part = ts_str.split('T').nth(1).unwrap_or("00");
             let hour: u32 = time_part[..2].parse().unwrap_or(0);
-            hour >= 12 && hour < 18
+            (12..18).contains(&hour)
         })
         .count();
     let evening_count = events
@@ -220,7 +220,7 @@ fn main() {
             let ts_str = e.timestamp.to_string();
             let time_part = ts_str.split('T').nth(1).unwrap_or("00");
             let hour: u32 = time_part[..2].parse().unwrap_or(0);
-            hour >= 18 || hour < 6
+            !(6..18).contains(&hour)
         })
         .count();
 

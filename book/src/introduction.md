@@ -22,7 +22,8 @@ Think of it as a toolkit for working with **events that happen somewhere and som
 | ⏱️ **Temporal Precision** | Timezone-aware timestamps with configurable precision |
 | 📊 **Efficient Indexing** | R-tree spatial and B-tree temporal indexes for fast queries |
 | 🔗 **Graph Analysis** | Build relationship graphs between events |
-| 📁 **Format Support** | Import/export GeoJSON, CSV, and JSON |
+| � **Analysis Tools** | Metrics, clustering, trajectory analysis, and comparison |
+| �📁 **Format Support** | Import/export GeoJSON, CSV, and JSON |
 | ⚡ **Performance** | Designed for large-scale event processing |
 
 ## Use Cases
@@ -79,11 +80,12 @@ Ready to dive in? Start with the [Installation](./getting-started/installation.m
 - **I/O Formats**: Import/export to GeoJSON, CSV, JSON
 - **Indexing**: Efficient spatial and temporal queries
 - **Graph Analysis**: Build and analyze event relationship graphs
+- **Analysis**: Spatial metrics, temporal analysis, clustering, movement detection
 - **Cookbook**: Common patterns and recipes
 
 ## Links
 
 - [📦 Crates.io](https://crates.io/crates/spatial-narrative)
 - [📖 API Documentation](https://docs.rs/spatial-narrative)
-- [🐙 GitHub Repository](https://github.com/yourusername/spatial-narrative)
-- [💬 Discussions](https://github.com/yourusername/spatial-narrative/discussions)
+- [🐙 GitHub Repository](https://github.com/jwilliamsresearch/spatial-narrative)
+- [💬 Discussions](https://github.com/jwilliamsresearch/spatial-narrative/discussions)
