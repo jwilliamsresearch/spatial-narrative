@@ -69,22 +69,22 @@
 **Goal**: Read and write data
 
 ### Format Trait
-- [ ] Define `Format` trait with import/export methods
-- [ ] Define common error types for I/O operations
+- [x] Define `Format` trait with import/export methods
+- [x] Define common error types for I/O operations
 
 ### GeoJSON Support
-- [ ] Implement `GeoJsonFormat` struct
-- [ ] Implement `GeoJsonOptions` configuration
-- [ ] GeoJSON import (FeatureCollection → Narrative)
-- [ ] GeoJSON export (Narrative → FeatureCollection)
-- [ ] Handle temporal extensions in properties
-- [ ] Handle source metadata in properties
+- [x] Implement `GeoJsonFormat` struct
+- [x] Implement `GeoJsonOptions` configuration
+- [x] GeoJSON import (FeatureCollection → Narrative)
+- [x] GeoJSON export (Narrative → FeatureCollection)
+- [x] Handle temporal extensions in properties
+- [x] Handle source metadata in properties
 
 ### CSV Support
-- [ ] Implement `CsvFormat` struct with configurable columns
-- [ ] CSV import with column mapping
-- [ ] CSV export with configurable columns
-- [ ] Handle missing/optional columns
+- [x] Implement `CsvFormat` struct with configurable columns
+- [x] CSV import with column mapping
+- [x] CSV export with configurable columns
+- [x] Handle missing/optional columns
 
 ### GPX Support (Optional Feature)
 - [ ] Implement `GpxFormat` struct
@@ -92,10 +92,10 @@
 - [ ] GPX export (Trajectory → track)
 
 ### Custom JSON Format
-- [ ] Define JSON schema for narrative format
-- [ ] Implement `NarrativeJsonFormat`
-- [ ] Import with version checking
-- [ ] Export with version tagging
+- [x] Define JSON schema for narrative format
+- [x] Implement `JsonFormat`
+- [x] Import with version checking
+- [x] Export with version tagging
 
 ### Streaming Support
 - [ ] Implement `StreamingReader` for large files
@@ -103,23 +103,23 @@
 - [ ] Memory-efficient parsing
 
 ### Validation & Errors
-- [ ] Validation during import
-- [ ] Meaningful error messages with context
+- [x] Validation during import
+- [x] Meaningful error messages with context
 - [ ] Error recovery options
 
 ### Testing
-- [ ] Integration tests with sample GeoJSON files
-- [ ] Integration tests with sample CSV files
-- [ ] Round-trip tests (import → export → import)
-- [ ] Error handling tests (malformed input)
+- [x] Integration tests with sample GeoJSON files
+- [x] Integration tests with sample CSV files
+- [x] Round-trip tests (import → export → import)
+- [x] Error handling tests (malformed input)
 - [ ] Large file streaming tests
 
 ### Documentation
-- [ ] Format-specific documentation
-- [ ] Examples for each format
+- [x] Format-specific documentation
+- [x] Examples for each format
 - [ ] Error handling guide
 
-**Deliverable**: `spatial_narrative::io` module with format converters
+**Deliverable**: `spatial_narrative::io` module with format converters ✅ (11 new tests + 4 doc tests passing)
 
 ---
 

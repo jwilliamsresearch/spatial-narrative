@@ -5,9 +5,45 @@
 //!
 //! # Supported Formats
 //!
-//! - GeoJSON - Standard geographic data format
-//! - CSV - Tabular data with configurable columns
-//! - GPX - GPS exchange format (optional feature)
-//! - Custom JSON - Optimized narrative format
+//! - [`GeoJsonFormat`] - Standard geographic data format
+//! - [`CsvFormat`] - Tabular data with configurable columns
+//! - [`JsonFormat`] - Custom JSON format optimized for narratives
+//! - GPX - GPS exchange format (optional feature, TODO)
+//!
+//! # Example
+//!
+//! ```rust
+//! use spatial_narrative::io::{GeoJsonFormat, CsvFormat, JsonFormat, Format};
+//! use spatial_narrative::prelude::*;
+//!
+//! let narrative = Narrative::builder()
+//!     .title("My Story")
+//!     .event(Event::builder()
+//!         .location(Location::new(40.7128, -74.006))
+//!         .timestamp(Timestamp::now())
+//!         .text("Something happened")
+//!         .build())
+//!     .build();
+//!
+//! // Export to GeoJSON
+//! let geojson_format = GeoJsonFormat::new();
+//! let geojson = geojson_format.export_str(&narrative).unwrap();
+//!
+//! // Export to CSV
+//! let csv_format = CsvFormat::new();
+//! let csv = csv_format.export_str(&narrative).unwrap();
+//!
+//! // Export to custom JSON
+//! let json_format = JsonFormat::pretty();
+//! let json = json_format.export_str(&narrative).unwrap();
+//! ```
 
-// TODO: Phase 2 implementation
+mod format;
+mod geojson;
+mod csv_format;
+mod json_format;
+
+pub use format::Format;
+pub use geojson::{GeoJsonFormat, GeoJsonOptions};
+pub use csv_format::{CsvFormat, CsvOptions};
+pub use json_format::JsonFormat;

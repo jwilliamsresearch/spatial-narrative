@@ -59,6 +59,7 @@ pub trait TemporalEntity {
 ///
 /// This is a convenience trait that combines `SpatialEntity` and
 /// `TemporalEntity` for entities that have both space and time.
+#[allow(dead_code)]
 pub trait SpatiotemporalEntity: SpatialEntity + TemporalEntity {
     /// Checks if this entity is within both spatial bounds and time range.
     fn is_within(&self, bounds: &GeoBounds, range: &TimeRange) -> bool {
