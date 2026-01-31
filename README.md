@@ -7,11 +7,11 @@
 [![Downloads](https://img.shields.io/crates/d/spatial-narrative.svg?logo=rust)](https://crates.io/crates/spatial-narrative)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Documentation](https://img.shields.io/badge/docs-rustdoc-green.svg?logo=docsdotrs)](https://docs.rs/spatial-narrative)
-[![CI](https://img.shields.io/github/actions/workflow/status/yourusername/spatial-narrative/ci.yml?branch=main&logo=github)](https://github.com/yourusername/spatial-narrative/actions)
-[![codecov](https://img.shields.io/codecov/c/github/yourusername/spatial-narrative?logo=codecov)](https://codecov.io/gh/yourusername/spatial-narrative)
+[![CI](https://img.shields.io/github/actions/workflow/status/jwilliamsresearch/spatial-narrative/ci.yml?branch=main&logo=github)](https://github.com/jwilliamsresearch/spatial-narrative/actions)
+[![codecov](https://img.shields.io/codecov/c/github/jwilliamsresearch/spatial-narrative?logo=codecov)](https://codecov.io/gh/jwilliamsresearch/spatial-narrative)
 
-[![GitHub stars](https://img.shields.io/github/stars/yourusername/spatial-narrative?style=social)](https://github.com/yourusername/spatial-narrative)
-[![GitHub forks](https://img.shields.io/github/forks/yourusername/spatial-narrative?style=social)](https://github.com/yourusername/spatial-narrative/fork)
+[![GitHub stars](https://img.shields.io/github/stars/jwilliamsresearch/spatial-narrative?style=social)](https://github.com/jwilliamsresearch/spatial-narrative)
+[![GitHub forks](https://img.shields.io/github/forks/jwilliamsresearch/spatial-narrative?style=social)](https://github.com/jwilliamsresearch/spatial-narrative/fork)
 
 **A Rust library for modeling, indexing, analyzing, and transforming spatial narratives — sequences of events anchored in both space and time.**
 
