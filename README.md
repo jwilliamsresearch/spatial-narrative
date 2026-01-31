@@ -7,7 +7,7 @@
 [![Downloads](https://img.shields.io/crates/d/spatial-narrative.svg?logo=rust)](https://crates.io/crates/spatial-narrative)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Documentation](https://img.shields.io/badge/docs-rustdoc-green.svg?logo=docsdotrs)](https://docs.rs/spatial-narrative)
-[![CI](https://img.shields.io/github/actions/workflow/status/jwilliamsresearch/spatial-narrative/ci.yml?branch=main&logo=github)](https://github.com/jwilliamsresearch/spatial-narrative/actions)
+[![CI](https://img.shields.io/github/actions/workflow/status/jwilliamsresearch/spatial-narrative/ci.yml?branch=master&logo=github)](https://github.com/jwilliamsresearch/spatial-narrative/actions)
 [![codecov](https://img.shields.io/codecov/c/github/jwilliamsresearch/spatial-narrative?logo=codecov)](https://codecov.io/gh/jwilliamsresearch/spatial-narrative)
 
 [![GitHub stars](https://img.shields.io/github/stars/jwilliamsresearch/spatial-narrative?style=social)](https://github.com/jwilliamsresearch/spatial-narrative)
@@ -48,7 +48,7 @@ Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-spatial-narrative = "1.0"
+spatial-narrative = "0.1"
 ```
 
 ## Quick Start

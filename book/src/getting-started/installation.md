@@ -11,7 +11,7 @@ Add `spatial-narrative` to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-spatial-narrative = "1.0"
+spatial-narrative = "0.1"
 ```
 
 Or use cargo add:
@@ -28,14 +28,14 @@ The library comes with sensible defaults. All core features are included by defa
 
 ```toml
 [dependencies]
-spatial-narrative = "1.0"  # Includes all standard features
+spatial-narrative = "0.1"  # Includes all standard features
 ```
 
 ### Optional Features
 
 ```toml
 [dependencies]
-spatial-narrative = { version = "1.0", features = ["parallel"] }
+spatial-narrative = { version = "0.1", features = ["parallel"] }
 ```
 
 | Feature | Description | Default |
