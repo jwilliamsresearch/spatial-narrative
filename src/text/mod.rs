@@ -7,10 +7,19 @@
 //!
 //! The text module includes:
 //!
-//! - [`TextAnalyzer`] - Named entity recognition for locations, organizations, etc.
+//! - [`TextAnalyzer`] - Pattern-based named entity recognition for locations, organizations, etc.
 //! - [`KeywordExtractor`] - Extract keywords and key phrases from text
 //! - [`Entity`] - A detected named entity with type and span info
 //! - [`Keyword`] - An extracted keyword with relevance score
+//!
+//! ## ML-based NER (Optional)
+//!
+//! With the `ml-ner` feature enabled, you get access to:
+//!
+//! - `MlNerModel` - Transformer-based NER using ONNX models
+//! - `MlEntity` - Entity with confidence scores from ML inference
+//!
+//! Enable with: `spatial-narrative = { version = "0.1", features = ["ml-ner"] }`
 //!
 //! # Examples
 //!
@@ -56,6 +65,12 @@ mod analyzer;
 mod entity;
 mod keywords;
 
+#[cfg(feature = "ml-ner")]
+mod ml_ner;
+
 pub use analyzer::TextAnalyzer;
 pub use entity::{Entity, EntityType};
 pub use keywords::{Keyword, KeywordExtractor};
+
+#[cfg(feature = "ml-ner")]
+pub use ml_ner::{init_ort, MlEntity, MlNerModel, MlNerResult};

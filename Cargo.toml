@@ -67,6 +67,13 @@ reqwest = { version = "0.12", optional = true, features = ["json"] }
 # Command-line interface (optional)
 clap = { version = "4.5", optional = true, features = ["derive"] }
 
+# ML-based NER using ONNX Runtime (optional)
+# Note: Uses load-dynamic for better cross-platform compatibility
+# Users must have ONNX Runtime installed or set ORT_DYLIB_PATH environment variable
+ort = { version = "2.0.0-rc.11", optional = true, default-features = false, features = ["std", "ndarray", "load-dynamic"] }
+tokenizers = { version = "0.21", optional = true, default-features = false, features = ["onig"] }
+ndarray = { version = "0.16", optional = true }
+
 [dev-dependencies]
 criterion = "0.5"
 proptest = "1.4"
@@ -77,10 +84,11 @@ default = []
 cli = ["clap"]
 projections = ["proj"]
 nlp = ["unicode-segmentation"]
+ml-ner = ["ort", "tokenizers", "ndarray"]
 gpx-support = ["gpx"]
 database = ["rusqlite"]
 geocoding = ["reqwest"]
-full = ["cli", "projections", "nlp", "gpx-support", "database", "geocoding"]
+full = ["cli", "projections", "nlp", "gpx-support", "database", "geocoding", "ml-ner"]
 
 # [[bench]]
 # name = "spatial_queries"
