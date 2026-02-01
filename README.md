@@ -16,356 +16,242 @@
 [![Downloads](https://img.shields.io/crates/d/spatial-narrative.svg?logo=rust)](https://crates.io/crates/spatial-narrative)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Documentation](https://img.shields.io/badge/docs-rustdoc-green.svg?logo=docsdotrs)](https://docs.rs/spatial-narrative)
-[![CI](https://img.shields.io/github/actions/workflow/status/jwilliamsresearch/spatial-narrative/ci.yml?branch=master&logo=github)](https://github.com/jwilliamsresearch/spatial-narrative/actions)
-[![codecov](https://img.shields.io/codecov/c/github/jwilliamsresearch/spatial-narrative?logo=codecov)](https://codecov.io/gh/jwilliamsresearch/spatial-narrative)
 
-[![GitHub stars](https://img.shields.io/github/stars/jwilliamsresearch/spatial-narrative?style=social)](https://github.com/jwilliamsresearch/spatial-narrative)
-[![GitHub forks](https://img.shields.io/github/forks/jwilliamsresearch/spatial-narrative?style=social)](https://github.com/jwilliamsresearch/spatial-narrative/fork)
+**Extract geographic narratives from text.**
 
-**Composable building blocks for spatial narratives in Rust.**
-
-[📖 Documentation](https://docs.rs/spatial-narrative) · [🚀 Getting Started](#quick-start) · [📦 Crates.io](https://crates.io/crates/spatial-narrative) · [💬 Discussions](https://github.com/jwilliamsresearch/spatial-narrative/discussions)
+[📖 Documentation](https://docs.rs/spatial-narrative) · [🚀 Getting Started](#quick-start) · [📦 Crates.io](https://crates.io/crates/spatial-narrative)
 
 </div>
 
 ---
 
-## Philosophy
+## What It Does
 
-`spatial-narrative` provides **focused, interoperable components** for working with geospatial event data. It's designed to fit into your existing data pipeline, not replace it.
-
-**What it provides:**
-- Standard data types for events, locations, timestamps, and narratives
-- Spatial indexing (R-tree) and temporal indexing (B-tree)
-- Analysis algorithms: DBSCAN clustering, spatial/temporal metrics, trajectory detection
-- Format conversion: GeoJSON, CSV, JSON import/export
-- Graph structures for event relationships
-
-**What it doesn't try to do:**
-- Fetch data from APIs (use `reqwest`)
-- Parse domain-specific formats (use your parser + our types)
-- Render visualizations (export to GeoJSON, use Leaflet/Mapbox)
-- Replace `geo`/`geo-types` (we interop with them)
-
-The library is most valuable when you need **analysis and indexing** on top of your own data ingestion pipeline.
-
-## Ecosystem Integration
-
-`spatial-narrative` is built to compose with the Rust geospatial ecosystem:
+`spatial-narrative` extracts **locations and events from unstructured text**, turning documents into structured geospatial data.
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                     Your Application                             │
-├─────────────────────────────────────────────────────────────────┤
-│  Data Sources          spatial-narrative         Outputs        │
-│  ─────────────         ─────────────────         ───────        │
-│  reqwest (HTTP)   →    Event, Narrative    →    GeoJSON         │
-│  csv (parsing)    →    SpatialIndex        →    Leaflet/Mapbox  │
-│  serde_json       →    DBSCAN, Metrics     →    QGIS            │
-│  Custom parsers   →    NarrativeGraph      →    CSV/Excel       │
-└─────────────────────────────────────────────────────────────────┘
+Input:  "The summit in Paris brought together leaders from Berlin and Tokyo.
+         Negotiations continued through the week before concluding in Geneva."
+
+Output: [
+  { location: Paris (48.86°, 2.35°), text: "summit" },
+  { location: Berlin (52.52°, 13.41°), text: "leaders" },
+  { location: Tokyo (35.68°, 139.65°), text: "leaders" },
+  { location: Geneva (46.20°, 6.14°), text: "concluding" }
+]
 ```
 
-**Direct interop:**
-- `Location` ↔ `geo_types::Point<f64>` (via `From`/`Into`)
-- All types implement `Serialize`/`Deserialize`
-- R-tree backed by `rstar`
-- Graphs powered by `petgraph`
+## Core Features
+
+| Feature | Description |
+|---------|-------------|
+| **Geoparsing** | Extract place names from text and resolve to coordinates |
+| **Built-in Gazetteer** | 2,500+ world cities with coordinates, population, aliases |
+| **Coordinate Detection** | Parse decimal degrees, DMS, and other coordinate formats |
+| **Online Gazetteers** | Optional Nominatim, GeoNames, Wikidata integration |
+| **Event Modeling** | Structure extracted locations into events with timestamps |
+| **Analysis** | Clustering, spatial metrics, trajectory detection |
+| **Export** | GeoJSON, CSV, JSON for mapping tools |
+
+## Quick Start
+
+```rust
+use spatial_narrative::parser::{GeoParser, BuiltinGazetteer};
+
+// Create parser with built-in gazetteer (2500+ cities, no API needed)
+let gazetteer = BuiltinGazetteer::new();
+let parser = GeoParser::with_gazetteer(gazetteer);
+
+// Extract locations from text
+let text = "Fighting broke out near Kyiv before spreading to Kharkiv and Odesa.";
+let mentions = parser.extract(text);
+
+for mention in &mentions {
+    if let Some(loc) = &mention.location {
+        println!("{}: ({:.2}°, {:.2}°)", mention.text, loc.lat, loc.lon);
+    }
+}
+// Kyiv: (50.45°, 30.52°)
+// Kharkiv: (49.99°, 36.23°)
+// Odesa: (46.48°, 30.73°)
+```
 
 ## Installation
 
 ```toml
 [dependencies]
 spatial-narrative = "0.1"
-
-# Your data pipeline dependencies
-reqwest = { version = "0.12", features = ["blocking"] }  # HTTP
-csv = "1.3"                                               # CSV parsing
-serde_json = "1.0"                                        # JSON
 ```
 
-## Quick Start
+For online geocoding (Nominatim, GeoNames, Wikidata):
 
-```rust
-use spatial_narrative::core::{Event, Location, Timestamp, NarrativeBuilder};
-use spatial_narrative::analysis::{DBSCAN, SpatialMetrics};
-use spatial_narrative::io::{Format, GeoJsonFormat};
-
-// Your events (from whatever source)
-let events = vec![
-    Event::new(Location::new(40.7128, -74.0060), Timestamp::now(), "NYC event"),
-    Event::new(Location::new(40.7580, -73.9855), Timestamp::now(), "Times Square"),
-    Event::new(Location::new(51.5074, -0.1278), Timestamp::now(), "London event"),
-];
-
-// Wrap in a narrative
-let narrative = NarrativeBuilder::new()
-    .title("Global Events")
-    .events(events)
-    .build();
-
-// Analyze: find geographic clusters
-let dbscan = DBSCAN::new(50_000.0, 2);  // 50km radius, min 2 points
-let clusters = dbscan.cluster(&narrative.events);
-println!("Found {} clusters", clusters.num_clusters());
-
-// Analyze: compute spatial metrics
-let metrics = SpatialMetrics::from_events(&narrative.events);
-if let Some(centroid) = metrics.centroid {
-    println!("Centroid: {:.2}°, {:.2}°", centroid.lat, centroid.lon);
-}
-
-// Export: GeoJSON for web visualization
-let mut output = Vec::new();
-GeoJsonFormat::new().export(&narrative, &mut output)?;
-// → Use with Leaflet, Mapbox, QGIS, etc.
+```toml
+[dependencies]
+spatial-narrative = { version = "0.1", features = ["geocoding"] }
 ```
-
-## Modules
-
-| Module | What it does | Key types |
-|--------|--------------|-----------|
-| `core` | Data structures | `Event`, `Location`, `Timestamp`, `Narrative`, `GeoBounds`, `TimeRange` |
-| `index` | Fast spatial/temporal queries | `SpatialIndex`, `TemporalIndex`, `SpatiotemporalIndex` |
-| `analysis` | Algorithms | `DBSCAN`, `KMeans`, `SpatialMetrics`, `TemporalMetrics`, `Trajectory` |
-| `graph` | Event relationships | `NarrativeGraph`, `EdgeType` |
-| `io` | Format conversion | `GeoJsonFormat`, `CsvFormat`, `JsonFormat` |
-| `parser` | Text → locations | `GeoParser`, `Gazetteer`, `BuiltinGazetteer` |
-
-## Core Types
-
-### Event
-
-The fundamental unit — something that happened at a place and time:
-
-```rust
-use spatial_narrative::core::{Event, EventBuilder, Location, Timestamp};
-
-// Simple construction
-let event = Event::new(
-    Location::new(48.8566, 2.3522),
-    Timestamp::parse("2024-07-14T10:00:00Z").unwrap(),
-    "Bastille Day celebrations"
-);
-
-// Builder for richer data
-let event = EventBuilder::new()
-    .location(Location::new(48.8566, 2.3522))
-    .timestamp(Timestamp::parse("2024-07-14T10:00:00Z").unwrap())
-    .text("Bastille Day celebrations")
-    .tag("celebration")
-    .tag("national-holiday")
-    .metadata("source", "reuters")
-    .metadata("confidence", "0.95")
-    .build();
-```
-
-### Narrative
-
-A collection of related events:
-
-```rust
-use spatial_narrative::core::{NarrativeBuilder, GeoBounds, TimeRange};
-
-let narrative = NarrativeBuilder::new()
-    .title("European Summit 2024")
-    .author("Research Team")
-    .events(events)
-    .build();
-
-// Built-in queries
-let chronological = narrative.events_chronological();
-let bounds = narrative.bounds();        // Geographic extent
-let range = narrative.time_range();     // Temporal extent
-
-// Filtering
-let paris = narrative.filter_spatial(&GeoBounds::new(48.0, 2.0, 49.0, 3.0));
-let january = narrative.filter_temporal(&TimeRange::month(2024, 1));
-```
-
-## Indexing
-
-For datasets where you need fast queries (not just iteration):
-
-```rust
-use spatial_narrative::index::SpatiotemporalIndex;
-use spatial_narrative::core::{Event, GeoBounds};
-
-// Build index from events
-let index = SpatiotemporalIndex::from_iter(
-    events.clone(),
-    |e| &e.location,
-    |e| &e.timestamp,
-);
-
-// Spatial query: events in a bounding box
-let europe = GeoBounds::new(35.0, -10.0, 72.0, 40.0);
-let european_events = index.query_spatial(&europe);
-
-// Combined query: space + time
-let range = TimeRange::month(2024, 1);
-let january_in_europe = index.query(&europe, &range);
-```
-
-**Performance:** O(log n + k) for spatial and temporal queries (R-tree / B-tree).
-
-## Analysis
-
-### Clustering
-
-```rust
-use spatial_narrative::analysis::DBSCAN;
-
-// DBSCAN: density-based clustering
-let dbscan = DBSCAN::new(100_000.0, 3);  // 100km radius, min 3 points
-let result = dbscan.cluster(&events);
-
-for cluster in &result.clusters {
-    println!(
-        "Cluster: {} events around ({:.1}°, {:.1}°)",
-        cluster.len(),
-        cluster.centroid.lat,
-        cluster.centroid.lon
-    );
-}
-
-// Noise points (not in any cluster)
-println!("{} noise points", result.noise.len());
-```
-
-### Metrics
-
-```rust
-use spatial_narrative::analysis::{SpatialMetrics, TemporalMetrics};
-
-let spatial = SpatialMetrics::from_events(&events);
-println!("Total distance: {:.0} km", spatial.total_distance / 1000.0);
-println!("Dispersion: {:.0} m", spatial.dispersion);
-
-let temporal = TemporalMetrics::from_events(&events);
-println!("Duration: {:.0} hours", temporal.duration_secs / 3600.0);
-println!("Avg inter-event time: {:.0} min", temporal.avg_inter_event_time / 60.0);
-```
-
-## I/O Formats
-
-Export to formats your visualization tools understand:
-
-```rust
-use spatial_narrative::io::{Format, GeoJsonFormat, CsvFormat, JsonFormat};
-
-// GeoJSON → Leaflet, Mapbox, QGIS, Google Earth
-let mut geojson = Vec::new();
-GeoJsonFormat::new().export(&narrative, &mut geojson)?;
-
-// CSV → Excel, pandas, R, databases
-let mut csv = Vec::new();
-CsvFormat::new().export(&narrative, &mut csv)?;
-
-// JSON → full fidelity, all metadata preserved
-let mut json = Vec::new();
-JsonFormat::pretty().export(&narrative, &mut json)?;
-```
-
-**Round-trip:** All formats support import back to `Narrative`.
 
 ## Geoparsing
 
-Extract locations from unstructured text:
+### Built-in Gazetteer
+
+Works offline with 2,500+ major world cities:
 
 ```rust
+use spatial_narrative::parser::{GeoParser, BuiltinGazetteer, Gazetteer};
+
+let gazetteer = BuiltinGazetteer::new();
+
+// Direct lookup
+if let Some(location) = gazetteer.lookup("Tokyo") {
+    println!("Tokyo: {}, {}", location.lat, location.lon);
+}
+
+// Check for aliases
+gazetteer.lookup("NYC");        // → New York
+gazetteer.lookup("München");    // → Munich
+
+// Use with parser
+let parser = GeoParser::with_gazetteer(gazetteer);
+let mentions = parser.extract("Protests erupted in Cairo and Alexandria.");
+```
+
+### Coordinate Detection
+
+Automatically detects coordinates in text:
+
+```rust
+let parser = GeoParser::new();
+
+let text = "The vessel was last seen at 40.7128° N, 74.0060° W";
+let mentions = parser.extract_coordinates(text);
+
+// Also handles:
+// - Decimal: 40.7128, -74.0060
+// - DMS: 40°42'46"N 74°0'22"W
+// - With symbols: 40.7128°N, 74.0060°W
+```
+
+### Online Gazetteers
+
+For comprehensive coverage beyond the built-in cities:
+
+```rust
+use spatial_narrative::parser::{GeoParser, MultiGazetteer, BuiltinGazetteer};
+
+#[cfg(feature = "geocoding")]
+use spatial_narrative::parser::{GazetteerNominatim, GazetteerGeoNames};
+
+// Chain multiple sources: try built-in first, fall back to API
+let gazetteer = MultiGazetteer::new()
+    .add(BuiltinGazetteer::new())           // Fast, offline
+    .add(GazetteerNominatim::new());        // Comprehensive, online
+
+let parser = GeoParser::with_gazetteer(gazetteer);
+```
+
+## Building Narratives
+
+Once you've extracted locations, structure them as events:
+
+```rust
+use spatial_narrative::core::{Event, EventBuilder, NarrativeBuilder, Timestamp};
 use spatial_narrative::parser::{GeoParser, BuiltinGazetteer};
 
-let gazetteer = BuiltinGazetteer::new();  // 2500+ world cities
-let parser = GeoParser::with_gazetteer(gazetteer);
+let parser = GeoParser::with_gazetteer(BuiltinGazetteer::new());
 
-let text = "The summit in Paris brought together leaders from Berlin and Tokyo.";
-let mentions = parser.extract(text);
+// Process a document
+let article = "
+    March 15: Ceasefire announced in Damascus.
+    March 17: Aid convoys reached Aleppo.
+    March 20: Talks resumed in Geneva.
+";
 
-for mention in mentions {
-    println!("{}: {:?}", mention.text, mention.location);
-}
-// Paris: Some(Location { lat: 48.8566, lon: 2.3522, ... })
-// Berlin: Some(Location { lat: 52.52, lon: 13.405, ... })
-// Tokyo: Some(Location { lat: 35.6762, lon: 139.6503, ... })
+// Extract and build events (you'd parse dates from text too)
+let mentions = parser.extract(article);
+let events: Vec<Event> = mentions
+    .into_iter()
+    .filter_map(|m| {
+        Some(EventBuilder::new()
+            .location(m.location?)
+            .timestamp(Timestamp::now())  // Parse from text in practice
+            .text(&m.text)
+            .build())
+    })
+    .collect();
+
+let narrative = NarrativeBuilder::new()
+    .title("Syria Crisis Timeline")
+    .events(events)
+    .build();
 ```
 
-## Example: Building a Pipeline
+## Analysis
 
-Here's how the pieces fit together for a typical use case:
+After extraction, analyze spatial patterns:
 
 ```rust
-use spatial_narrative::core::{Event, EventBuilder, Location, Timestamp, NarrativeBuilder};
 use spatial_narrative::analysis::{DBSCAN, SpatialMetrics};
-use spatial_narrative::index::SpatiotemporalIndex;
-use spatial_narrative::io::{Format, GeoJsonFormat};
 
-fn process_my_data(raw_records: Vec<MyRecord>) -> Result<(), Box<dyn Error>> {
-    // 1. Transform your data → Events
-    let events: Vec<Event> = raw_records
-        .into_iter()
-        .filter_map(|r| {
-            Some(EventBuilder::new()
-                .location(Location::new(r.lat?, r.lon?))
-                .timestamp(Timestamp::parse(&r.date).ok()?)
-                .text(&r.description)
-                .tag(&r.category)
-                .build())
-        })
-        .collect();
+// Find geographic clusters
+let dbscan = DBSCAN::new(100_000.0, 2);  // 100km radius, min 2 points
+let clusters = dbscan.cluster(&narrative.events);
 
-    // 2. Wrap in narrative
-    let narrative = NarrativeBuilder::new()
-        .title("My Analysis")
-        .events(events)
-        .build();
+println!("Found {} event clusters", clusters.num_clusters());
 
-    // 3. Index for queries
-    let index = SpatiotemporalIndex::from_iter(
-        narrative.events.clone(),
-        |e| &e.location,
-        |e| &e.timestamp,
-    );
-
-    // 4. Analyze
-    let clusters = DBSCAN::new(50_000.0, 2).cluster(&narrative.events);
-    let metrics = SpatialMetrics::from_events(&narrative.events);
-
-    // 5. Export for visualization
-    let mut file = File::create("output.geojson")?;
-    GeoJsonFormat::new().export(&narrative, &mut file)?;
-
-    Ok(())
+// Compute spatial extent
+let metrics = SpatialMetrics::from_events(&narrative.events);
+if let Some(centroid) = metrics.centroid {
+    println!("Narrative centered around: {:.2}°, {:.2}°", centroid.lat, centroid.lon);
 }
+println!("Geographic spread: {:.0} km", metrics.dispersion / 1000.0);
 ```
 
-## When to Use This Library
+## Export
 
-**Good fit:**
-- You have event data with locations and times
-- You need spatial/temporal indexing and queries
-- You want clustering or trajectory analysis
-- You're exporting to mapping tools (Leaflet, QGIS, etc.)
+Export to standard formats for visualization:
 
-**Probably overkill:**
-- Simple point-in-polygon checks (just use `geo`)
-- Static coordinate lists (just use `geo-types`)
-- No analysis needed (just serialize directly)
+```rust
+use spatial_narrative::io::{Format, GeoJsonFormat};
 
-**Not the right tool:**
-- Real-time visualization (use a JS mapping library)
-- Heavy GIS operations (use GDAL bindings or PostGIS)
-- Machine learning on spatial data (use specialized ML crates)
+// GeoJSON → Leaflet, Mapbox, QGIS, Google Earth
+let mut output = std::fs::File::create("narrative.geojson")?;
+GeoJsonFormat::new().export(&narrative, &mut output)?;
+```
+
+```javascript
+// Load in Leaflet
+fetch('narrative.geojson')
+  .then(res => res.json())
+  .then(data => L.geoJSON(data).addTo(map));
+```
+
+## Use Cases
+
+- **Journalism**: Extract locations from news articles to map story development
+- **Intelligence**: Geolocate events from reports and social media
+- **Historical Research**: Map events from historical documents
+- **Disaster Response**: Extract affected locations from situation reports
+- **Academic Research**: Ground qualitative text data in geography
+
+## Modules
+
+| Module | Purpose |
+|--------|---------|
+| `parser` | **Geoparsing**: extract locations from text |
+| `core` | Data types: Event, Location, Timestamp, Narrative |
+| `analysis` | Clustering, metrics, trajectory analysis |
+| `index` | Spatial/temporal indexing for large datasets |
+| `graph` | Event relationship networks |
+| `io` | GeoJSON, CSV, JSON export |
 
 ## Performance
 
-| Operation | Complexity | Notes |
-|-----------|------------|-------|
-| Spatial bbox query | O(log n + k) | R-tree |
-| Temporal range query | O(log n + k) | B-tree |
-| K-nearest neighbors | O(log n + k) | R-tree |
-| DBSCAN clustering | O(n²) | Can be slow for n > 10k |
-| Metrics computation | O(n) | Single pass |
+| Operation | Notes |
+|-----------|-------|
+| Built-in gazetteer lookup | O(1) hash lookup, ~2500 cities |
+| Coordinate extraction | Regex-based, single pass |
+| DBSCAN clustering | O(n²), suitable for <10k events |
+| Spatial queries | O(log n + k) via R-tree |
 
 ## Contributing
 
@@ -374,19 +260,14 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 ```bash
 cargo test
 cargo test --all-features
-cargo fmt --check
 cargo clippy
 ```
 
 ## License
 
-MIT License — see [LICENSE](LICENSE) for details.
+MIT License — see [LICENSE](LICENSE).
 
 ## Acknowledgments
 
-Built on top of excellent Rust crates:
-- [rstar](https://docs.rs/rstar) — R-tree spatial indexing
-- [petgraph](https://docs.rs/petgraph) — Graph data structures
-- [chrono](https://docs.rs/chrono) — Date and time handling
-- [serde](https://docs.rs/serde) — Serialization
-- [geo](https://docs.rs/geo) — Geospatial primitives
+- Gazetteer data derived from [GeoNames](https://www.geonames.org/) (CC BY 4.0)
+- Built with [rstar](https://docs.rs/rstar), [chrono](https://docs.rs/chrono), [geo](https://docs.rs/geo)
