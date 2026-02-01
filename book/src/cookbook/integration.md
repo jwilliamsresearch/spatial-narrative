@@ -1,6 +1,96 @@
 # Integration Examples
 
-Integrate spatial-narrative with other tools and workflows.
+`spatial-narrative` is designed to fit into your existing data pipeline. Here's how to integrate it with common tools.
+
+## Data Ingestion
+
+### HTTP APIs (with reqwest)
+
+Fetch data from any API and transform into Events:
+
+```rust
+use reqwest::blocking::Client;
+use spatial_narrative::core::{Event, EventBuilder, Location, Timestamp, NarrativeBuilder};
+
+fn fetch_and_process() -> Result<Narrative, Box<dyn std::error::Error>> {
+    let client = Client::new();
+
+    // Fetch from your data source
+    let response: Vec<MyApiRecord> = client
+        .get("https://api.example.com/events")
+        .send()?
+        .json()?;
+
+    // Transform to Events
+    let events: Vec<Event> = response
+        .into_iter()
+        .filter_map(|r| {
+            Some(EventBuilder::new()
+                .location(Location::new(r.lat, r.lon))
+                .timestamp(Timestamp::parse(&r.date).ok()?)
+                .text(&r.description)
+                .build())
+        })
+        .collect();
+
+    Ok(NarrativeBuilder::new()
+        .title("API Data")
+        .events(events)
+        .build())
+}
+```
+
+### CSV Files
+
+```rust
+use csv::Reader;
+use spatial_narrative::core::{Event, EventBuilder, Location, Timestamp};
+
+fn load_csv(path: &str) -> Vec<Event> {
+    let mut rdr = Reader::from_path(path).unwrap();
+
+    rdr.deserialize()
+        .filter_map(|result| {
+            let record: MyRecord = result.ok()?;
+            Some(EventBuilder::new()
+                .location(Location::new(record.lat, record.lon))
+                .timestamp(Timestamp::parse(&record.date).ok()?)
+                .text(&record.text)
+                .build())
+        })
+        .collect()
+}
+```
+
+### JSON Files
+
+```rust
+use serde_json;
+use spatial_narrative::core::{Event, Location, Timestamp};
+
+#[derive(serde::Deserialize)]
+struct RawEvent {
+    lat: f64,
+    lon: f64,
+    time: String,
+    description: String,
+}
+
+fn load_json(path: &str) -> Vec<Event> {
+    let data = std::fs::read_to_string(path).unwrap();
+    let raw: Vec<RawEvent> = serde_json::from_str(&data).unwrap();
+
+    raw.into_iter()
+        .filter_map(|r| {
+            Some(Event::new(
+                Location::new(r.lat, r.lon),
+                Timestamp::parse(&r.time).ok()?,
+                &r.description
+            ))
+        })
+        .collect()
+}
+```
 
 ## Web Mapping
 

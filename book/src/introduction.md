@@ -12,7 +12,7 @@
     <text x="40" y="115" font-family="'Segoe UI', sans-serif" font-weight="800" font-size="64" fill="#1e3a8a" letter-spacing="-1.5">spatial</text>
     <text x="270" y="85" font-family="'Segoe UI', sans-serif" font-weight="300" font-size="64" fill="#f97316" letter-spacing="-1">narrative</text>
     <path id="pathStepUp" d="M45,135 L230,135 C250,135 250,105 270,105 L540,105" fill="none" stroke="url(#primaryGrad)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="45" cy="135" r="5" fill="#1e3a8a"/> 
+    <circle cx="45" cy="135" r="5" fill="#1e3a8a"/>
     <circle cx="540" cy="105" r="5" fill="#f97316"/>
     <circle r="5" fill="white" stroke="#f97316" stroke-width="2">
         <animateMotion dur="4s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.4 0 0.2 1">
@@ -24,88 +24,105 @@
 
 </div>
 
-<div class="warning">
+**Composable building blocks for spatial narratives in Rust.**
 
-📚 **Welcome to the Spatial Narrative documentation!**
+## Philosophy
 
-This book provides comprehensive documentation for the `spatial-narrative` Rust library.
+`spatial-narrative` provides **focused, interoperable components** for working with geospatial event data. It's designed to fit into your existing data pipeline, not replace it.
 
-</div>
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     Your Application                             │
+├─────────────────────────────────────────────────────────────────┤
+│  Data Sources          spatial-narrative         Outputs        │
+│  ─────────────         ─────────────────         ───────        │
+│  reqwest (HTTP)   →    Event, Narrative    →    GeoJSON         │
+│  csv (parsing)    →    SpatialIndex        →    Leaflet/Mapbox  │
+│  serde_json       →    DBSCAN, Metrics     →    QGIS            │
+│  Custom parsers   →    NarrativeGraph      →    CSV/Excel       │
+└─────────────────────────────────────────────────────────────────┘
+```
 
-## What is Spatial Narrative?
+### What it provides
 
-**Spatial Narrative** is a Rust library for modeling, indexing, analyzing, and transforming **spatial narratives** — sequences of events anchored in both space and time.
+- Standard data types for events, locations, timestamps, and narratives
+- Spatial indexing (R-tree) and temporal indexing (B-tree)
+- Analysis algorithms: DBSCAN clustering, spatial/temporal metrics, trajectory detection
+- Format conversion: GeoJSON, CSV, JSON import/export
+- Graph structures for event relationships
+- Geoparsing: extract locations from unstructured text
 
-Think of it as a toolkit for working with **events that happen somewhere and somewhen**.
+### What it doesn't try to do
 
-## Key Features
+- Fetch data from APIs (use `reqwest`)
+- Parse domain-specific formats (use your parser + our types)
+- Render visualizations (export to GeoJSON, use Leaflet/Mapbox)
+- Replace `geo`/`geo-types` (we interop with them)
 
-| Feature | Description |
-|---------|-------------|
-| 🗺️ **Spatial Modeling** | Precise location handling with coordinates, elevation, and uncertainty |
-| ⏱️ **Temporal Precision** | Timezone-aware timestamps with configurable precision |
-| 📊 **Efficient Indexing** | R-tree spatial and B-tree temporal indexes for fast queries |
-| 🔗 **Graph Analysis** | Build relationship graphs between events |
-| � **Analysis Tools** | Metrics, clustering, trajectory analysis, and comparison |
-| �📁 **Format Support** | Import/export GeoJSON, CSV, and JSON |
-| ⚡ **Performance** | Designed for large-scale event processing |
+The library is most valuable when you need **analysis and indexing** on top of your own data ingestion pipeline.
 
-## Use Cases
+## Modules
 
-- **Journalism**: Track story development across locations and time
-- **Historical Research**: Model timelines with precise geographic context
-- **Urban Planning**: Analyze event patterns in urban environments
-- **Disaster Response**: Correlate incident reports spatiotemporally
-- **Academic Research**: Process geographic and temporal research data
+| Module | What it does | Key types |
+|--------|--------------|-----------|
+| `core` | Data structures | `Event`, `Location`, `Timestamp`, `Narrative`, `GeoBounds`, `TimeRange` |
+| `index` | Fast spatial/temporal queries | `SpatialIndex`, `TemporalIndex`, `SpatiotemporalIndex` |
+| `analysis` | Algorithms | `DBSCAN`, `KMeans`, `SpatialMetrics`, `TemporalMetrics`, `Trajectory` |
+| `graph` | Event relationships | `NarrativeGraph`, `EdgeType` |
+| `io` | Format conversion | `GeoJsonFormat`, `CsvFormat`, `JsonFormat` |
+| `parser` | Text → locations | `GeoParser`, `Gazetteer`, `BuiltinGazetteer` |
 
 ## Quick Example
 
 ```rust
 use spatial_narrative::core::{Event, Location, Timestamp, NarrativeBuilder};
-use spatial_narrative::graph::{NarrativeGraph, EdgeType};
+use spatial_narrative::analysis::{DBSCAN, SpatialMetrics};
+use spatial_narrative::io::{Format, GeoJsonFormat};
 
-// Create events
-let event1 = Event::new(
-    Location::new(40.7128, -74.0060),  // NYC
-    Timestamp::parse("2024-01-15T10:00:00Z").unwrap(),
-    "Conference begins in Manhattan"
-);
+// Your events (from whatever source you fetch them)
+let events = vec![
+    Event::new(Location::new(40.7128, -74.0060), Timestamp::now(), "NYC event"),
+    Event::new(Location::new(40.7580, -73.9855), Timestamp::now(), "Times Square"),
+    Event::new(Location::new(51.5074, -0.1278), Timestamp::now(), "London event"),
+];
 
-let event2 = Event::new(
-    Location::new(40.7580, -73.9855),  // Times Square
-    Timestamp::parse("2024-01-15T14:00:00Z").unwrap(),
-    "Press conference at Times Square"
-);
-
-// Build a narrative
+// Wrap in a narrative
 let narrative = NarrativeBuilder::new()
-    .title("NYC Conference Coverage")
-    .events(vec![event1, event2])
+    .title("Global Events")
+    .events(events)
     .build();
 
-// Build a graph and connect events
-let mut graph = NarrativeGraph::from_events(narrative.events);
-graph.connect_temporal();  // Auto-connect by time sequence
+// Analyze: find geographic clusters
+let dbscan = DBSCAN::new(50_000.0, 2);  // 50km radius, min 2 points
+let clusters = dbscan.cluster(&narrative.events);
+println!("Found {} clusters", clusters.num_clusters());
 
-println!("Narrative has {} events, {} connections", 
-    graph.node_count(), 
-    graph.edge_count()
-);
+// Export: GeoJSON for web visualization
+let mut output = Vec::new();
+GeoJsonFormat::new().export(&narrative, &mut output)?;
+// → Use with Leaflet, Mapbox, QGIS, etc.
 ```
+
+## When to Use This Library
+
+**Good fit:**
+- You have event data with locations and times
+- You need spatial/temporal indexing and queries
+- You want clustering or trajectory analysis
+- You're exporting to mapping tools (Leaflet, QGIS, etc.)
+
+**Probably overkill:**
+- Simple point-in-polygon checks (just use `geo`)
+- Static coordinate lists (just use `geo-types`)
+- No analysis needed (just serialize directly)
+
+**Not the right tool:**
+- Real-time visualization (use a JS mapping library)
+- Heavy GIS operations (use GDAL bindings or PostGIS)
 
 ## Getting Started
 
 Ready to dive in? Start with the [Installation](./getting-started/installation.md) guide!
-
-## Navigation
-
-- **Getting Started**: Installation, quick start, and core concepts
-- **Core Types**: Detailed documentation of Location, Event, Timestamp, etc.
-- **I/O Formats**: Import/export to GeoJSON, CSV, JSON
-- **Indexing**: Efficient spatial and temporal queries
-- **Graph Analysis**: Build and analyze event relationship graphs
-- **Analysis**: Spatial metrics, temporal analysis, clustering, movement detection
-- **Cookbook**: Common patterns and recipes
 
 ## Links
 
