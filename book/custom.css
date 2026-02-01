@@ -32,88 +32,94 @@ code, pre, .hljs {
    Ayu Dark Theme (Primary dark theme)
    ============================================ */
 
-.ayu {
-    --bg: #0a0a0b;
-    --fg: #f4f4f5;
-    --sidebar-bg: #111113;
-    --sidebar-fg: #a1a1aa;
-    --sidebar-active: #3b82f6;
-    --sidebar-spacer: #2a2a2f;
-    --scrollbar: #2a2a2f;
-    --icons: #71717a;
-    --icons-hover: #f4f4f5;
-    --links: #3b82f6;
-    --inline-code-color: #f4f4f5;
-    --code-bg: #16161a;
-    --quote-bg: #16161a;
-    --quote-border: #3b82f6;
-    --table-border-color: #2a2a2f;
-    --table-header-bg: #16161a;
-    --table-alternate-bg: #111113;
-    --searchbar-border-color: #2a2a2f;
-    --searchbar-bg: #16161a;
-    --searchbar-fg: #f4f4f5;
-    --searchbar-shadow-color: transparent;
-    --searchresults-header-fg: #a1a1aa;
-    --searchresults-border-color: #2a2a2f;
-    --searchresults-li-bg: #16161a;
-    --search-mark-bg: rgba(59, 130, 246, 0.3);
+html.ayu {
+    --bg: #0a0a0b !important;
+    --fg: #f4f4f5 !important;
+    --sidebar-bg: #111113 !important;
+    --sidebar-fg: #a1a1aa !important;
+    --sidebar-active: #3b82f6 !important;
+    --sidebar-spacer: #2a2a2f !important;
+    --scrollbar: #2a2a2f !important;
+    --icons: #71717a !important;
+    --icons-hover: #f4f4f5 !important;
+    --links: #3b82f6 !important;
+    --inline-code-color: #f4f4f5 !important;
+    --theme-popup-bg: #16161a !important;
+    --theme-popup-border: #2a2a2f !important;
+    --theme-hover: #1c1c21 !important;
+    --quote-bg: #16161a !important;
+    --quote-border: #3b82f6 !important;
+    --table-border-color: #2a2a2f !important;
+    --table-header-bg: #16161a !important;
+    --table-alternate-bg: #111113 !important;
+    --searchbar-border-color: #2a2a2f !important;
+    --searchbar-bg: #16161a !important;
+    --searchbar-fg: #f4f4f5 !important;
+    --searchbar-shadow-color: transparent !important;
+    --searchresults-header-fg: #a1a1aa !important;
+    --searchresults-border-color: #2a2a2f !important;
+    --searchresults-li-bg: #16161a !important;
+    --search-mark-bg: rgba(59, 130, 246, 0.3) !important;
 }
 
 /* ============================================
    Light Theme
    ============================================ */
 
-.light {
-    --bg: #ffffff;
-    --fg: #0f172a;
-    --sidebar-bg: #f8fafc;
-    --sidebar-fg: #475569;
-    --sidebar-active: #2563eb;
-    --sidebar-spacer: #e2e8f0;
-    --scrollbar: #cbd5e1;
-    --icons: #64748b;
-    --icons-hover: #0f172a;
-    --links: #2563eb;
-    --inline-code-color: #0f172a;
-    --code-bg: #f1f5f9;
-    --quote-bg: #f8fafc;
-    --quote-border: #2563eb;
-    --table-border-color: #e2e8f0;
-    --table-header-bg: #f1f5f9;
-    --table-alternate-bg: #f8fafc;
-    --searchbar-border-color: #e2e8f0;
-    --searchbar-bg: #ffffff;
-    --searchbar-fg: #0f172a;
-    --searchbar-shadow-color: rgba(0, 0, 0, 0.1);
-    --searchresults-header-fg: #64748b;
-    --searchresults-border-color: #e2e8f0;
-    --searchresults-li-bg: #f8fafc;
-    --search-mark-bg: rgba(37, 99, 235, 0.2);
+html.light {
+    --bg: #ffffff !important;
+    --fg: #0f172a !important;
+    --sidebar-bg: #f8fafc !important;
+    --sidebar-fg: #475569 !important;
+    --sidebar-active: #2563eb !important;
+    --sidebar-spacer: #e2e8f0 !important;
+    --scrollbar: #cbd5e1 !important;
+    --icons: #64748b !important;
+    --icons-hover: #0f172a !important;
+    --links: #2563eb !important;
+    --inline-code-color: #0f172a !important;
+    --theme-popup-bg: #ffffff !important;
+    --theme-popup-border: #e2e8f0 !important;
+    --theme-hover: #f1f5f9 !important;
+    --quote-bg: #f8fafc !important;
+    --quote-border: #2563eb !important;
+    --table-border-color: #e2e8f0 !important;
+    --table-header-bg: #f1f5f9 !important;
+    --table-alternate-bg: #f8fafc !important;
+    --searchbar-border-color: #e2e8f0 !important;
+    --searchbar-bg: #ffffff !important;
+    --searchbar-fg: #0f172a !important;
+    --searchbar-shadow-color: rgba(0, 0, 0, 0.1) !important;
+    --searchresults-header-fg: #64748b !important;
+    --searchresults-border-color: #e2e8f0 !important;
+    --searchresults-li-bg: #f8fafc !important;
+    --search-mark-bg: rgba(37, 99, 235, 0.2) !important;
 }
 
 /* ============================================
    Rust Theme (Enhanced)
    ============================================ */
 
-.rust {
-    --bg: #0f0f11;
-    --fg: #f4f4f5;
-    --sidebar-bg: #16161a;
-    --sidebar-fg: #a1a1aa;
-    --sidebar-active: #f97316;
-    --sidebar-spacer: #2a2a2f;
-    --scrollbar: #2a2a2f;
-    --icons: #71717a;
-    --icons-hover: #f4f4f5;
-    --links: #f97316;
-    --inline-code-color: #f4f4f5;
-    --code-bg: #1c1c21;
-    --quote-bg: #1c1c21;
-    --quote-border: #f97316;
-    --table-border-color: #2a2a2f;
-    --table-header-bg: #1c1c21;
-    --table-alternate-bg: #16161a;
+html.rust {
+    --bg: #0f0f11 !important;
+    --fg: #f4f4f5 !important;
+    --sidebar-bg: #16161a !important;
+    --sidebar-fg: #a1a1aa !important;
+    --sidebar-active: #f97316 !important;
+    --sidebar-spacer: #2a2a2f !important;
+    --scrollbar: #2a2a2f !important;
+    --icons: #71717a !important;
+    --icons-hover: #f4f4f5 !important;
+    --links: #f97316 !important;
+    --inline-code-color: #f4f4f5 !important;
+    --theme-popup-bg: #16161a !important;
+    --theme-popup-border: #2a2a2f !important;
+    --theme-hover: #1c1c21 !important;
+    --quote-bg: #1c1c21 !important;
+    --quote-border: #f97316 !important;
+    --table-border-color: #2a2a2f !important;
+    --table-header-bg: #1c1c21 !important;
+    --table-alternate-bg: #16161a !important;
 }
 
 /* ============================================

@@ -3,7 +3,6 @@ title = "Spatial Narrative Documentation"
 authors = ["James Williams"]
 description = "A Rust library for modeling, indexing, and analyzing spatial narratives"
 language = "en"
-multilingual = false
 src = "src"
 
 [build]
