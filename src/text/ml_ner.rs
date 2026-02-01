@@ -28,7 +28,20 @@
 //! optimum-cli export onnx --model dslim/bert-base-NER ./bert-ner-onnx/
 //! ```
 //!
-//! # Example
+//! # Auto-Download (requires `ml-ner-download` feature)
+//!
+//! With the `ml-ner-download` feature enabled, models can be automatically downloaded
+//! from HuggingFace Hub:
+//!
+//! ```rust,ignore
+//! use spatial_narrative::text::{MlNerModel, NerModel};
+//!
+//! // First run downloads ~65MB, subsequent runs load from cache
+//! let model = MlNerModel::download_blocking(NerModel::DistilBertQuantized)?;
+//! let entities = model.extract("Dr. Smith visited Paris on Monday.")?;
+//! ```
+//!
+//! # Example (Manual Setup)
 //!
 //! ```rust,ignore
 //! use spatial_narrative::text::{init_ort, MlNerModel};
@@ -46,6 +59,7 @@
 
 use std::collections::HashMap;
 use std::path::Path;
+use std::path::PathBuf;
 use std::sync::Mutex;
 
 use ort::session::builder::GraphOptimizationLevel;
@@ -58,6 +72,215 @@ use crate::error::Error;
 
 /// Result type for ML NER operations.
 pub type MlNerResult<T> = Result<T, Error>;
+
+/// Available pre-trained NER models that can be auto-downloaded from HuggingFace.
+///
+/// Each model variant offers different trade-offs between size, speed, and accuracy.
+/// All models are trained on the CoNLL-2003 dataset and recognize four entity types:
+/// - `LOC` (Location)
+/// - `PER` (Person)
+/// - `ORG` (Organization)
+/// - `MISC` (Miscellaneous)
+///
+/// # Example
+///
+/// ```rust,ignore
+/// use spatial_narrative::text::{MlNerModel, NerModel};
+///
+/// // Use the smallest, fastest model (recommended for most use cases)
+/// let model = MlNerModel::download_blocking(NerModel::DistilBertQuantized)?;
+///
+/// // Or use a larger model for better accuracy
+/// let model = MlNerModel::download_blocking(NerModel::BertLarge)?;
+/// ```
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum NerModel {
+    /// Quantized DistilBERT (~65MB) - Default, best balance of size/speed/accuracy
+    /// - F1: ~90% on CoNLL-2003
+    /// - Speed: Fast
+    /// - License: Apache 2.0
+    DistilBertQuantized,
+
+    /// Full DistilBERT (~250MB) - Slightly more accurate than quantized
+    /// - F1: ~90% on CoNLL-2003
+    /// - Speed: Fast
+    /// - License: Apache 2.0
+    DistilBert,
+
+    /// BERT Base (~400MB) - Higher accuracy
+    /// - F1: ~91% on CoNLL-2003
+    /// - Speed: Medium
+    /// - License: Apache 2.0
+    BertBase,
+
+    /// BERT Large (~1.2GB) - Best accuracy
+    /// - F1: ~93% on CoNLL-2003
+    /// - Speed: Slow
+    /// - License: Apache 2.0
+    BertLarge,
+
+    /// Multilingual model (~700MB) - Supports 40+ languages
+    /// - F1: ~90% on CoNLL-2003
+    /// - Speed: Medium
+    /// - License: CC BY-NC-SA 4.0
+    Multilingual,
+
+    /// Custom model from HuggingFace Hub
+    /// Provide the repository ID (e.g., "my-org/my-ner-model")
+    Custom(String),
+}
+
+impl NerModel {
+    /// Returns the HuggingFace repository ID for this model.
+    pub fn repo_id(&self) -> &str {
+        match self {
+            Self::DistilBertQuantized => {
+                "onnx-community/distilbert-base-cased-finetuned-conll03-english-ONNX"
+            }
+            Self::DistilBert => "dslim/distilbert-NER",
+            Self::BertBase => "dslim/bert-base-NER",
+            Self::BertLarge => "dslim/bert-large-NER",
+            Self::Multilingual => "Babelscape/wikineural-multilingual-ner",
+            Self::Custom(id) => id,
+        }
+    }
+
+    /// Returns a cache-friendly name for this model.
+    pub fn cache_name(&self) -> String {
+        match self {
+            Self::DistilBertQuantized => "distilbert-ner-quantized".to_string(),
+            Self::DistilBert => "distilbert-ner".to_string(),
+            Self::BertBase => "bert-base-ner".to_string(),
+            Self::BertLarge => "bert-large-ner".to_string(),
+            Self::Multilingual => "multilingual-ner".to_string(),
+            Self::Custom(id) => id.replace('/', "-"),
+        }
+    }
+
+    /// Returns the approximate download size in MB.
+    pub fn download_size_mb(&self) -> u64 {
+        match self {
+            Self::DistilBertQuantized => 65,
+            Self::DistilBert => 250,
+            Self::BertBase => 400,
+            Self::BertLarge => 1200,
+            Self::Multilingual => 700,
+            Self::Custom(_) => 0, // Unknown
+        }
+    }
+
+    /// Returns whether this model is pre-exported to ONNX format.
+    pub fn is_onnx_native(&self) -> bool {
+        matches!(self, Self::DistilBertQuantized)
+    }
+
+    /// Returns the files needed from the HuggingFace repo.
+    pub fn required_files(&self) -> Vec<&'static str> {
+        if self.is_onnx_native() {
+            // ONNX-native models have quantized version
+            vec![
+                "onnx/model_quantized.onnx",
+                "tokenizer.json",
+                "config.json",
+            ]
+        } else {
+            // Other models need ONNX export (handled separately)
+            vec!["tokenizer.json", "config.json"]
+        }
+    }
+}
+
+impl Default for NerModel {
+    fn default() -> Self {
+        Self::DistilBertQuantized
+    }
+}
+
+impl std::fmt::Display for NerModel {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::DistilBertQuantized => write!(f, "DistilBERT Quantized (~65MB)"),
+            Self::DistilBert => write!(f, "DistilBERT (~250MB)"),
+            Self::BertBase => write!(f, "BERT Base (~400MB)"),
+            Self::BertLarge => write!(f, "BERT Large (~1.2GB)"),
+            Self::Multilingual => write!(f, "Multilingual (~700MB)"),
+            Self::Custom(id) => write!(f, "Custom: {}", id),
+        }
+    }
+}
+
+/// Returns the cache directory for downloaded models.
+///
+/// - Linux: `~/.cache/spatial-narrative/models/`
+/// - macOS: `~/Library/Caches/spatial-narrative/models/`
+/// - Windows: `%LOCALAPPDATA%\spatial-narrative\models\`
+#[cfg(feature = "ml-ner-download")]
+pub fn model_cache_dir() -> PathBuf {
+    dirs::cache_dir()
+        .unwrap_or_else(|| PathBuf::from("."))
+        .join("spatial-narrative")
+        .join("models")
+}
+
+/// Returns the path where a specific model would be cached.
+#[cfg(feature = "ml-ner-download")]
+pub fn model_cache_path(model: &NerModel) -> PathBuf {
+    model_cache_dir().join(model.cache_name())
+}
+
+/// Check if a model is already cached locally.
+#[cfg(feature = "ml-ner-download")]
+pub fn is_model_cached(model: &NerModel) -> bool {
+    let cache_path = model_cache_path(model);
+    cache_path.exists() && cache_path.join("model.onnx").exists()
+}
+
+/// Clear the model cache for a specific model or all models.
+#[cfg(feature = "ml-ner-download")]
+pub fn clear_model_cache(model: Option<&NerModel>) -> std::io::Result<()> {
+    match model {
+        Some(m) => {
+            let path = model_cache_path(m);
+            if path.exists() {
+                std::fs::remove_dir_all(path)?;
+            }
+        }
+        None => {
+            let cache_dir = model_cache_dir();
+            if cache_dir.exists() {
+                std::fs::remove_dir_all(cache_dir)?;
+            }
+        }
+    }
+    Ok(())
+}
+
+/// Get the total size of cached models in bytes.
+#[cfg(feature = "ml-ner-download")]
+pub fn cache_size_bytes() -> std::io::Result<u64> {
+    let cache_dir = model_cache_dir();
+    if !cache_dir.exists() {
+        return Ok(0);
+    }
+    dir_size(&cache_dir)
+}
+
+#[cfg(feature = "ml-ner-download")]
+fn dir_size(path: &Path) -> std::io::Result<u64> {
+    let mut total = 0;
+    if path.is_dir() {
+        for entry in std::fs::read_dir(path)? {
+            let entry = entry?;
+            let path = entry.path();
+            if path.is_dir() {
+                total += dir_size(&path)?;
+            } else {
+                total += entry.metadata()?.len();
+            }
+        }
+    }
+    Ok(total)
+}
 
 /// Initialize ONNX Runtime with a path to the library.
 ///
@@ -230,6 +453,210 @@ impl MlNerModel {
             tokenizer,
             id2label,
         })
+    }
+
+    /// Download a pre-trained NER model from HuggingFace Hub.
+    ///
+    /// The model is cached locally after the first download. Subsequent calls
+    /// will load from the cache directory.
+    ///
+    /// # Arguments
+    ///
+    /// * `model` - The model variant to download (see [`NerModel`])
+    ///
+    /// # Example
+    ///
+    /// ```rust,ignore
+    /// use spatial_narrative::text::{MlNerModel, NerModel};
+    ///
+    /// // Download the smallest model (recommended)
+    /// let model = MlNerModel::download(NerModel::DistilBertQuantized).await?;
+    ///
+    /// // Or use a custom model
+    /// let model = MlNerModel::download(NerModel::Custom("my-org/my-model".into())).await?;
+    /// ```
+    ///
+    /// # Cache Location
+    ///
+    /// - Linux: `~/.cache/spatial-narrative/models/`
+    /// - macOS: `~/Library/Caches/spatial-narrative/models/`
+    /// - Windows: `%LOCALAPPDATA%\spatial-narrative\models\`
+    #[cfg(feature = "ml-ner-download")]
+    pub async fn download(model: NerModel) -> MlNerResult<Self> {
+        Self::download_with_progress(model, |_, _| {}).await
+    }
+
+    /// Download a model with progress reporting.
+    ///
+    /// # Arguments
+    ///
+    /// * `model` - The model variant to download
+    /// * `progress` - Callback function receiving (bytes_downloaded, total_bytes)
+    ///
+    /// # Example
+    ///
+    /// ```rust,ignore
+    /// let model = MlNerModel::download_with_progress(
+    ///     NerModel::DistilBertQuantized,
+    ///     |downloaded, total| {
+    ///         if total > 0 {
+    ///             println!("Progress: {:.1}%", (downloaded as f64 / total as f64) * 100.0);
+    ///         }
+    ///     }
+    /// ).await?;
+    /// ```
+    #[cfg(feature = "ml-ner-download")]
+    pub async fn download_with_progress<F>(model: NerModel, progress: F) -> MlNerResult<Self>
+    where
+        F: Fn(u64, u64) + Send + Sync + 'static,
+    {
+        // Use the sync API in a blocking task - more reliable than tokio API
+        let model_clone = model.clone();
+        tokio::task::spawn_blocking(move || {
+            Self::download_sync_impl(model_clone, progress)
+        })
+        .await
+        .map_err(|e| Error::ParseError(format!("Download task failed: {}", e)))?
+    }
+
+    #[cfg(feature = "ml-ner-download")]
+    fn download_sync_impl<F>(model: NerModel, progress: F) -> MlNerResult<Self>
+    where
+        F: Fn(u64, u64),
+    {
+        use hf_hub::api::sync::Api;
+
+        let cache_dir = model_cache_path(&model);
+
+        // Check if already cached
+        let model_file = cache_dir.join("model.onnx");
+        let tokenizer_file = cache_dir.join("tokenizer.json");
+        if model_file.exists() && tokenizer_file.exists() {
+            return Self::from_directory(&cache_dir);
+        }
+
+        // Create cache directory
+        std::fs::create_dir_all(&cache_dir).map_err(|e| {
+            Error::ParseError(format!("Failed to create cache directory: {}", e))
+        })?;
+
+        // Initialize HuggingFace Hub API (sync version)
+        let api = Api::new()
+            .map_err(|e| Error::ParseError(format!("Failed to initialize HuggingFace API: {}", e)))?;
+
+        let repo = api.model(model.repo_id().to_string());
+
+        // Download required files based on model type
+        if model.is_onnx_native() {
+            // For ONNX-community models, download the quantized model
+            println!("Downloading ONNX model...");
+            let onnx_path = repo
+                .get("onnx/model_quantized.onnx")
+                .map_err(|e| Error::ParseError(format!("Failed to download model: {}", e)))?;
+
+            // Copy to our cache directory
+            std::fs::copy(&onnx_path, cache_dir.join("model.onnx")).map_err(|e| {
+                Error::ParseError(format!("Failed to copy model to cache: {}", e))
+            })?;
+
+            progress(model.download_size_mb() * 1024 * 1024 / 2, model.download_size_mb() * 1024 * 1024);
+
+            // Download tokenizer - create fresh API/repo to avoid caching issues
+            println!("Downloading tokenizer...");
+            let api2 = Api::new()
+                .map_err(|e| Error::ParseError(format!("Failed to initialize HuggingFace API: {}", e)))?;
+            let repo2 = api2.model(model.repo_id().to_string());
+
+            let tokenizer_path = repo2
+                .get("tokenizer.json")
+                .map_err(|e| Error::ParseError(format!("Failed to download tokenizer: {}", e)))?;
+
+            std::fs::copy(&tokenizer_path, cache_dir.join("tokenizer.json")).map_err(|e| {
+                Error::ParseError(format!("Failed to copy tokenizer to cache: {}", e))
+            })?;
+
+            // Download config
+            if let Ok(config_path) = repo2.get("config.json") {
+                let _ = std::fs::copy(&config_path, cache_dir.join("config.json"));
+            }
+
+            progress(model.download_size_mb() * 1024 * 1024, model.download_size_mb() * 1024 * 1024);
+        } else {
+            // For non-ONNX models (like dslim/bert-base-NER), they need ONNX export
+            let onnx_result = repo.get("model.onnx");
+
+            match onnx_result {
+                Ok(path) => {
+                    std::fs::copy(&path, cache_dir.join("model.onnx")).map_err(|e| {
+                        Error::ParseError(format!("Failed to copy model to cache: {}", e))
+                    })?;
+                }
+                Err(_) => {
+                    // Clean up partial download
+                    let _ = std::fs::remove_dir_all(&cache_dir);
+                    return Err(Error::ParseError(format!(
+                        "Model '{}' does not have a pre-exported ONNX file.\n\
+                        \n\
+                        To use this model, export it to ONNX format first:\n\
+                        \n\
+                        pip install optimum[exporters] torch transformers\n\
+                        optimum-cli export onnx --model {} ./my-model-onnx/\n\
+                        \n\
+                        Then load it with:\n\
+                        let model = MlNerModel::from_directory(\"./my-model-onnx/\")?;\n\
+                        \n\
+                        Or use NerModel::DistilBertQuantized which is pre-exported to ONNX.",
+                        model,
+                        model.repo_id()
+                    )));
+                }
+            }
+
+            // Download tokenizer
+            let api2 = Api::new()
+                .map_err(|e| Error::ParseError(format!("Failed to initialize HuggingFace API: {}", e)))?;
+            let repo2 = api2.model(model.repo_id().to_string());
+
+            let tokenizer_path = repo2
+                .get("tokenizer.json")
+                .map_err(|e| Error::ParseError(format!("Failed to download tokenizer: {}", e)))?;
+
+            std::fs::copy(&tokenizer_path, cache_dir.join("tokenizer.json")).map_err(|e| {
+                Error::ParseError(format!("Failed to copy tokenizer to cache: {}", e))
+            })?;
+
+            // Download config (optional)
+            if let Ok(config_path) = repo2.get("config.json") {
+                let _ = std::fs::copy(&config_path, cache_dir.join("config.json"));
+            }
+        }
+
+        // Load the downloaded model
+        Self::from_directory(&cache_dir)
+    }
+
+    /// Blocking version of [`download`] for use in synchronous contexts.
+    ///
+    /// # Example
+    ///
+    /// ```rust,ignore
+    /// use spatial_narrative::text::{MlNerModel, NerModel};
+    ///
+    /// let model = MlNerModel::download_blocking(NerModel::DistilBertQuantized)?;
+    /// let entities = model.extract("Dr. Smith visited Paris.")?;
+    /// ```
+    #[cfg(feature = "ml-ner-download")]
+    pub fn download_blocking(model: NerModel) -> MlNerResult<Self> {
+        Self::download_blocking_with_progress(model, |_, _| {})
+    }
+
+    /// Blocking version of [`download_with_progress`].
+    #[cfg(feature = "ml-ner-download")]
+    pub fn download_blocking_with_progress<F>(model: NerModel, progress: F) -> MlNerResult<Self>
+    where
+        F: Fn(u64, u64),
+    {
+        Self::download_sync_impl(model, progress)
     }
 
     /// Extract named entities from text.

@@ -81,6 +81,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+#### ML-NER Auto-Download (`ml-ner-download` feature)
+- `NerModel` enum for selecting pre-trained models:
+  - `DistilBertQuantized` (~65MB, ~90% F1) - Recommended default
+  - `DistilBert` (~250MB, ~90% F1)
+  - `BertBase` (~400MB, ~91% F1)
+  - `BertLarge` (~1.2GB, ~93% F1)
+  - `Multilingual` (~700MB, 40+ languages)
+  - `Custom(String)` for any HuggingFace model
+- `MlNerModel::download()` - Async model download from HuggingFace Hub
+- `MlNerModel::download_blocking()` - Sync version for non-async contexts
+- `MlNerModel::download_with_progress()` - Download with progress callback
+- Cache management utilities:
+  - `model_cache_dir()` - Get platform-specific cache directory
+  - `model_cache_path(model)` - Get path for specific model
+  - `is_model_cached(model)` - Check if model is cached
+  - `cache_size_bytes()` - Get total cache size
+  - `clear_model_cache(model)` - Clear cached models
+- New example: `ml_ner_download` demonstrating auto-download usage
+
+#### Dependencies
+- `hf-hub` 0.4 - HuggingFace Hub API client
+- `dirs` 6.0 - Cross-platform directory paths
+- `tokio` 1.0 - Async runtime (for download feature)
+
+### Changed
+- Updated `ml-ner` feature documentation with auto-download quick start
+- `full` feature now includes `ml-ner-download` instead of `ml-ner`
+
+### Fixed
+- Tokenizer download issue with hf-hub 0.3 (upgraded to 0.4)
+
 ### Planned
 - Analysis module with clustering and trajectory extraction
 - GPX format support
@@ -88,3 +121,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - DOT export for graph visualization
 - Community detection algorithms
 - Geoparsing from unstructured text
+- CLI tool with `--download-model` command

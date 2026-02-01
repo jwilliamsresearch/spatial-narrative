@@ -56,6 +56,7 @@
 - [Overview](./text/overview.md)
 - [Geoparsing](./text/geoparser.md)
 - [Named Entity Recognition](./text/analyzer.md)
+- [ML-NER (Advanced)](./text/ml-ner.md)
 - [Keyword Extraction](./text/keywords.md)
 
 # Cookbook

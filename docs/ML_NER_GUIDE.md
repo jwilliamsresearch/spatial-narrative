@@ -9,7 +9,103 @@ The `ml-ner` feature provides state-of-the-art named entity recognition using tr
 - **Ambiguous cases** - Uses surrounding context to determine entity types
 - **Domain-specific entities** - Can be fine-tuned for specific domains (medical, legal, etc.)
 
-## Quick Start
+## Quick Start: Auto-Download (Recommended)
+
+The easiest way to get started is using the `ml-ner-download` feature, which automatically downloads models from HuggingFace Hub.
+
+### 1. Enable the feature
+
+```toml
+[dependencies]
+spatial-narrative = { version = "0.1", features = ["ml-ner-download"] }
+```
+
+### 2. Install ONNX Runtime
+
+**macOS (Homebrew):**
+```bash
+brew install onnxruntime
+export ORT_DYLIB_PATH=$(brew --prefix onnxruntime)/lib/libonnxruntime.dylib
+```
+
+**Linux (Ubuntu/Debian):**
+```bash
+sudo apt install libonnxruntime
+export ORT_DYLIB_PATH=/usr/lib/libonnxruntime.so
+```
+
+**Manual Download:**
+1. Download from [ONNX Runtime releases](https://github.com/microsoft/onnxruntime/releases)
+2. Extract and set `ORT_DYLIB_PATH` to the library path
+
+### 3. Use Auto-Download
+
+```rust
+use spatial_narrative::text::{MlNerModel, NerModel};
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // First run downloads ~65MB, subsequent runs load from cache
+    let model = MlNerModel::download_blocking(NerModel::DistilBertQuantized)?;
+
+    // Extract entities
+    let text = "Dr. Jane Smith from Stanford University visited Paris last week.";
+    let entities = model.extract(text)?;
+
+    for entity in entities {
+        println!("{}: \"{}\" (confidence: {:.2})", entity.label, entity.text, entity.score);
+    }
+
+    Ok(())
+}
+```
+
+### Available Models
+
+| Model | Size | F1 Score | Speed | Use Case |
+|-------|------|----------|-------|----------|
+| `NerModel::DistilBertQuantized` | ~65MB | ~90% | Fast | **Recommended** - best balance |
+| `NerModel::DistilBert` | ~250MB | ~90% | Fast | Slightly more accurate |
+| `NerModel::BertBase` | ~400MB | ~91% | Medium | Higher accuracy |
+| `NerModel::BertLarge` | ~1.2GB | ~93% | Slow | Best accuracy |
+| `NerModel::Multilingual` | ~700MB | ~90% | Medium | 40+ languages |
+| `NerModel::Custom(String)` | Varies | Varies | Varies | Your own model |
+
+### Cache Location
+
+Downloaded models are cached locally:
+- **Linux**: `~/.cache/spatial-narrative/models/`
+- **macOS**: `~/Library/Caches/spatial-narrative/models/`
+- **Windows**: `%LOCALAPPDATA%\spatial-narrative\models\`
+
+### Cache Management
+
+```rust
+use spatial_narrative::text::{
+    model_cache_dir, model_cache_path, is_model_cached,
+    cache_size_bytes, clear_model_cache, NerModel
+};
+
+// Check cache location
+println!("Cache: {:?}", model_cache_dir());
+
+// Check if a specific model is cached
+let cached = is_model_cached(&NerModel::DistilBertQuantized);
+
+// Get total cache size
+let size_mb = cache_size_bytes()? / 1024 / 1024;
+
+// Clear cache for a specific model
+clear_model_cache(Some(&NerModel::DistilBertQuantized))?;
+
+// Clear all cached models
+clear_model_cache(None)?;
+```
+
+---
+
+## Manual Setup (Alternative)
+
+If you prefer to manage models yourself, use the basic `ml-ner` feature.
 
 ### 1. Download ONNX Runtime
 

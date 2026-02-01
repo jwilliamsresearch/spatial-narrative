@@ -6,7 +6,7 @@ The `spatial_narrative` library provides comprehensive text processing capabilit
 
 Text processing is split across two modules:
 
-- **`text`** - Named Entity Recognition (NER) and keyword extraction
+- **`text`** - Named Entity Recognition (NER), ML-NER, and keyword extraction
 - **`parser`** - Geoparsing and coordinate detection
 
 ## Key Features
@@ -16,8 +16,8 @@ Text processing is split across two modules:
 Extract locations from text using multiple strategies:
 
 - **Coordinate Detection**: Decimal degrees, degrees with symbols, DMS format
-- **Place Name Resolution**: Built-in gazetteer with 200+ major world locations
-- **Custom Gazetteers**: Plug in your own place name databases
+- **Place Name Resolution**: Built-in gazetteer with 2500+ world cities from GeoNames
+- **Custom Gazetteers**: Plug in your own place name databases or external APIs
 
 ```rust
 use spatial_narrative::parser::{GeoParser, BuiltinGazetteer};
@@ -38,7 +38,7 @@ for mention in mentions {
 
 ### Named Entity Recognition (`text` module)
 
-Extract entities from narrative text:
+Extract entities from narrative text using rule-based patterns:
 
 ```rust
 use spatial_narrative::text::TextAnalyzer;
@@ -68,17 +68,41 @@ for kw in keywords {
 }
 ```
 
+### ML-NER (Advanced, requires `ml-ner` feature)
+
+Use transformer-based models for high-accuracy entity extraction:
+
+```rust
+use spatial_narrative::text::{MlNerModel, NerModel};
+
+// Auto-download and cache model (~65MB)
+let model = MlNerModel::download_blocking(NerModel::DistilBertQuantized)?;
+
+let text = "Dr. Chen presented her findings in Paris on March 15, 2024.";
+let entities = model.extract(text)?;
+
+for entity in entities {
+    println!("{}: \"{}\" (confidence: {:.2})", entity.label, entity.text, entity.score);
+}
+// Output:
+// PER: "Dr. Chen" (confidence: 0.99)
+// LOC: "Paris" (confidence: 0.98)
+// MISC: "March 15, 2024" (confidence: 0.95)
+```
+
 ## When to Use Each Module
 
 | Task | Module | Key Type |
 |------|--------|----------|
 | Extract coordinates from text | `parser` | `GeoParser` |
 | Resolve place names to coordinates | `parser` | `BuiltinGazetteer` |
-| Extract people, organizations, dates | `text` | `TextAnalyzer` |
+| Extract entities (rule-based) | `text` | `TextAnalyzer` |
+| Extract entities (ML, high accuracy) | `text` | `MlNerModel` |
 | Find important keywords | `text` | `KeywordExtractor` |
 
 ## Next Steps
 
 - [Geoparsing](./geoparser.md) - Coordinate detection and place name resolution
-- [Named Entity Recognition](./analyzer.md) - Extract entities from text
+- [Named Entity Recognition](./analyzer.md) - Rule-based entity extraction
+- [ML-NER (Advanced)](./ml-ner.md) - Machine learning-powered NER with auto-download
 - [Keyword Extraction](./keywords.md) - Identify key terms

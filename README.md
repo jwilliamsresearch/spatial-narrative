@@ -48,6 +48,7 @@ Output: [
 | **Geoparsing** | Extract place names from text and resolve to coordinates |
 | **Built-in Gazetteer** | 2,500+ world cities with coordinates, population, aliases |
 | **Coordinate Detection** | Parse decimal degrees, DMS, and other coordinate formats |
+| **ML-NER** | Transformer-based Named Entity Recognition (optional) |
 | **Online Gazetteers** | Optional Nominatim, GeoNames, Wikidata integration |
 | **Event Modeling** | Structure extracted locations into events with timestamps |
 | **Analysis** | Clustering, spatial metrics, trajectory detection |
@@ -89,6 +90,15 @@ For online geocoding (Nominatim, GeoNames, Wikidata):
 [dependencies]
 spatial-narrative = { version = "0.1", features = ["geocoding"] }
 ```
+
+For ML-powered Named Entity Recognition:
+
+```toml
+[dependencies]
+spatial-narrative = { version = "0.1", features = ["ml-ner-download"] }
+```
+
+**Note**: ML-NER requires [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases). See the [ML-NER guide](https://docs.rs/spatial-narrative) for installation.
 
 ## Geoparsing
 
@@ -137,6 +147,46 @@ For comprehensive coverage beyond the built-in cities:
 
 ```rust
 use spatial_narrative::parser::{GeoParser, MultiGazetteer, BuiltinGazetteer};
+
+#[cfg(feature = "geocoding")]
+{
+    use spatial_narrative::parser::GazetteerNominatim;
+    
+    let multi = MultiGazetteer::new(vec![
+        Box::new(BuiltinGazetteer::new()),
+        Box::new(GazetteerNominatim::new()),
+    ]);
+    
+    // Falls back to Nominatim if not in built-in gazetteer
+    let parser = GeoParser::with_gazetteer(multi);
+}
+```
+
+## ML-NER (Advanced)
+
+For high-accuracy Named Entity Recognition using transformer models:
+
+```rust
+use spatial_narrative::text::{MlNerModel, NerModel};
+
+// Auto-download model (first run downloads ~65MB, then cached locally)
+let model = MlNerModel::download_blocking(NerModel::DistilBertQuantized)?;
+
+let text = "Dr. Chen presented findings in Paris on March 15, 2024.";
+let entities = model.extract(text)?;
+
+for entity in entities {
+    println!("{}: \"{}\" (confidence: {:.2})", 
+        entity.label, entity.text, entity.score);
+}
+// PER: "Dr. Chen" (confidence: 0.99)
+// LOC: "Paris" (confidence: 0.98)
+// MISC: "March 15, 2024" (confidence: 0.95)
+```
+
+**Available models**: DistilBERT (~65MB), BERT Base (~400MB), BERT Large (~1.2GB), Multilingual (~700MB)
+
+**Requires**: `ml-ner-download` feature + ONNX Runtime ([installation guide](https://docs.rs/spatial-narrative))
 
 #[cfg(feature = "geocoding")]
 use spatial_narrative::parser::{GazetteerNominatim, GazetteerGeoNames};
@@ -238,6 +288,7 @@ fetch('narrative.geojson')
 | Module | Purpose |
 |--------|---------|
 | `parser` | **Geoparsing**: extract locations from text |
+| `text` | **NER & ML-NER**: entity extraction, keyword analysis |
 | `core` | Data types: Event, Location, Timestamp, Narrative |
 | `analysis` | Clustering, metrics, trajectory analysis |
 | `index` | Spatial/temporal indexing for large datasets |
@@ -269,5 +320,6 @@ MIT License — see [LICENSE](LICENSE).
 
 ## Acknowledgments
 
-- Gazetteer data derived from [GeoNames](https://www.geonames.org/) (CC BY 4.0)
-- Built with [rstar](https://docs.rs/rstar), [chrono](https://docs.rs/chrono), [geo](https://docs.rs/geo)
+- Gazetteer data from [GeoNames](https://www.geonames.org/) (CC BY 4.0)
+- ML models from [HuggingFace](https://huggingface.co/) (Apache 2.0 / CC BY-NC-SA 4.0)
+- Built with [rstar](https://docs.rs/rstar), [chrono](https://docs.rs/chrono), [geo](https://docs.rs/geo), [ort](https://docs.rs/ort)

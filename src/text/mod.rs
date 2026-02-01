@@ -21,6 +21,20 @@
 //!
 //! Enable with: `spatial-narrative = { version = "0.1", features = ["ml-ner"] }`
 //!
+//! ## Auto-Download Models (Optional)
+//!
+//! With the `ml-ner-download` feature, models can be automatically downloaded:
+//!
+//! ```rust,ignore
+//! use spatial_narrative::text::{MlNerModel, NerModel};
+//!
+//! // First run downloads ~65MB, subsequent runs load from cache
+//! let model = MlNerModel::download_blocking(NerModel::DistilBertQuantized)?;
+//! let entities = model.extract("Dr. Smith visited Paris.")?;
+//! ```
+//!
+//! Enable with: `spatial-narrative = { version = "0.1", features = ["ml-ner-download"] }`
+//!
 //! # Examples
 //!
 //! ## Extracting Named Entities
@@ -73,4 +87,7 @@ pub use entity::{Entity, EntityType};
 pub use keywords::{Keyword, KeywordExtractor};
 
 #[cfg(feature = "ml-ner")]
-pub use ml_ner::{init_ort, MlEntity, MlNerModel, MlNerResult};
+pub use ml_ner::{init_ort, MlEntity, MlNerModel, MlNerResult, NerModel};
+
+#[cfg(feature = "ml-ner-download")]
+pub use ml_ner::{cache_size_bytes, clear_model_cache, is_model_cached, model_cache_dir, model_cache_path};

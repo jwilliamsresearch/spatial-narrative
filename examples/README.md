@@ -40,6 +40,9 @@ cargo run --example comparison
 
 # Text processing (geoparsing, NER, keywords)
 cargo run --example text_processing
+
+# ML-powered NER (requires ml-ner-download feature)
+cargo run --example ml_ner_download --features ml-ner-download
 ```
 
 ## Examples Overview
@@ -122,6 +125,24 @@ Demonstrates the text processing capabilities:
 - Keyword extraction with TF scoring
 - Text utilities (tokenization, sentence splitting)
 - Geocoding with the built-in gazetteer
+
+### `ml_ner_download.rs`
+Demonstrates machine learning-powered Named Entity Recognition:
+- **Auto-download models**: Fetch pre-trained models from HuggingFace Hub
+- **Multiple model options**: DistilBERT, BERT, multilingual (40+ languages)
+- **High accuracy**: Transformer-based NER with confidence scores
+- **Cache management**: Models cached locally after first download
+- **Progress tracking**: Monitor download progress for large models
+- **Integration**: Convert ML entities to standard Entity type
+- **Requires**: `ml-ner-download` feature and ONNX Runtime installation
+
+Run with:
+```bash
+# First run downloads model (~65MB), subsequent runs load from cache
+cargo run --example ml_ner_download --features ml-ner-download
+
+# Note: Requires ONNX Runtime - see installation guide
+```
 
 ---
 
