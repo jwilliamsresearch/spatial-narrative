@@ -809,20 +809,20 @@
             <div class="bento-card card-stats">
                 <div class="stats-grid">
                     <div class="stat-item">
-                        <div class="stat-value blue">157</div>
+                        <div class="stat-value blue">199 passed · 1 ignored</div>
                         <div class="stat-label">Unit Tests</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-value purple">9</div>
-                        <div class="stat-label">Modules</div>
+                        <div class="stat-value purple">8</div>
+                        <div class="stat-label">Core Modules</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-value teal">6</div>
+                        <div class="stat-value teal">5</div>
                         <div class="stat-label">I/O Formats</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-value amber">95%</div>
-                        <div class="stat-label">ML F1 Score</div>
+                        <div class="stat-value amber">90–93%</div>
+                        <div class="stat-label">ML F1 (model dependent)</div>
                     </div>
                 </div>
             </div>
@@ -955,12 +955,14 @@ narrative.add_event(event);
                         <h3>Library Structure</h3>
                     </div>
                     <table class="module-table">
-                        <tr><td>core</td><td>Location, Timestamp, Event, Narrative, Bounds</td></tr>
-                        <tr><td>text</td><td>TextAnalyzer, KeywordExtractor, MlNerModel</td></tr>
-                        <tr><td>index</td><td>R*-tree, Quadtree, temporal indexing</td></tr>
-                        <tr><td>analysis</td><td>Movement analysis, clustering, statistics</td></tr>
-                        <tr><td>io</td><td>JSON, GeoJSON, CSV, GPX, SQLite</td></tr>
-                        <tr><td>graph</td><td>Graph-based narrative representations</td></tr>
+                        <tr><td><strong>core</strong></td><td>Location, Timestamp, Event, Narrative, GeoBounds — complete ✅</td></tr>
+                        <tr><td><strong>index</strong></td><td>SpatialIndex (R-tree), TemporalIndex, SpatiotemporalIndex, Heatmap — complete ✅</td></tr>
+                        <tr><td><strong>graph</strong></td><td>NarrativeGraph, DOT export, pathfinding — complete ✅</td></tr>
+                        <tr><td><strong>analysis</strong></td><td>Movement (trajectory, stops), Clustering (DBSCAN, KMeans), Spatial & Temporal metrics — mature ✅</td></tr>
+                        <tr><td><strong>io</strong></td><td>JSON, GeoJSON, CSV, (GPX optional), SQLite (optional, FTS) — adapters & examples</td></tr>
+                        <tr><td><strong>text</strong></td><td>TextAnalyzer, KeywordExtractor, Entity extraction; ML-based NER available via <code>ml-ner</code> feature (optional)</td></tr>
+                        <tr><td><strong>parser</strong></td><td>GeoParser, Gazetteer, Mention resolution (geoparsing)</td></tr>
+                        <tr><td><strong>transform</strong></td><td>Coordinate transforms, distance & bearing utilities</td></tr>
                     </table>
                 </div>
 
@@ -994,32 +996,32 @@ narrative.add_event(event);
                     <div class="section-label" style="margin-bottom: 20px;">Applications</div>
                     <div class="use-case-grid">
                         <div class="use-case">
-                            <div class="use-case-icon">📚</div>
+                            <div class="use-case-icon"><i class="fas fa-book"></i></div>
                             <div class="use-case-title">Digital Humanities</div>
                             <div class="use-case-desc">Historical events, literary geography, archival analysis</div>
                         </div>
                         <div class="use-case">
-                            <div class="use-case-icon">🔬</div>
+                            <div class="use-case-icon"><i class="fas fa-flask"></i></div>
                             <div class="use-case-title">Social Science</div>
                             <div class="use-case-desc">Migration patterns, urban mobility, conflict studies</div>
                         </div>
                         <div class="use-case">
-                            <div class="use-case-icon">📰</div>
+                            <div class="use-case-icon"><i class="fas fa-newspaper"></i></div>
                             <div class="use-case-title">Journalism</div>
                             <div class="use-case-desc">Investigative research, fact-checking, data stories</div>
                         </div>
                         <div class="use-case">
-                            <div class="use-case-icon">🚚</div>
+                            <div class="use-case-icon"><i class="fas fa-truck"></i></div>
                             <div class="use-case-title">Logistics</div>
                             <div class="use-case-desc">GPS track analysis, route optimization, delivery patterns</div>
                         </div>
                         <div class="use-case">
-                            <div class="use-case-icon">🏃</div>
+                            <div class="use-case-icon"><i class="fas fa-running"></i></div>
                             <div class="use-case-title">Fitness</div>
                             <div class="use-case-desc">Training analysis, route tracking, performance metrics</div>
                         </div>
                         <div class="use-case">
-                            <div class="use-case-icon">🗂️</div>
+                            <div class="use-case-icon"><i class="fas fa-folder"></i></div>
                             <div class="use-case-title">Personal</div>
                             <div class="use-case-desc">Photo organization, travel diaries, family history</div>
                         </div>
