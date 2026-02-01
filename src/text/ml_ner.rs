@@ -85,7 +85,7 @@ pub type MlNerResult<T> = Result<T, Error>;
 pub fn init_ort<P: AsRef<Path>>(dylib_path: P) -> MlNerResult<()> {
     let env_builder = ort::init_from(dylib_path.as_ref())
         .map_err(|e| Error::ParseError(format!("Failed to initialize ONNX Runtime: {}", e)))?;
-    
+
     let success = env_builder.commit();
     if !success {
         return Err(Error::ParseError(
@@ -118,7 +118,7 @@ impl MlEntity {
             "ORG" | "B-ORG" | "I-ORG" | "ORGANIZATION" => EntityType::Organization,
             "LOC" | "B-LOC" | "I-LOC" | "LOCATION" | "GPE" | "B-GPE" | "I-GPE" => {
                 EntityType::Location
-            }
+            },
             "DATE" | "B-DATE" | "I-DATE" | "TIME" | "B-TIME" | "I-TIME" => EntityType::DateTime,
             "MISC" | "B-MISC" | "I-MISC" => EntityType::Other,
             _ => EntityType::Other,
@@ -252,8 +252,10 @@ impl MlNerModel {
         // Create tensors using ort::Tensor::from_array with (shape, data) tuple
         let input_ids_tensor = Tensor::from_array((vec![1i64, seq_len as i64], input_ids))
             .map_err(|e| Error::ParseError(format!("Failed to create input tensor: {}", e)))?;
-        let attention_mask_tensor = Tensor::from_array((vec![1i64, seq_len as i64], attention_mask))
-            .map_err(|e| Error::ParseError(format!("Failed to create attention mask tensor: {}", e)))?;
+        let attention_mask_tensor =
+            Tensor::from_array((vec![1i64, seq_len as i64], attention_mask)).map_err(|e| {
+                Error::ParseError(format!("Failed to create attention mask tensor: {}", e))
+            })?;
 
         // Lock session for inference
         let mut session = self
@@ -397,7 +399,7 @@ impl MlNerModel {
                         *curr_end = token_end;
                         *curr_score = (*curr_score + prob) / 2.0; // Average confidence
                     }
-                }
+                },
                 None => {
                     let token_text = &text[token_start..token_end];
                     current_entity = Some((
@@ -407,7 +409,7 @@ impl MlNerModel {
                         token_start,
                         token_end,
                     ));
-                }
+                },
             }
         }
 

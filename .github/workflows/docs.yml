@@ -41,10 +41,12 @@ jobs:
           cd book
           mdbook build
 
-      - name: Copy Rustdoc to docs
+      - name: Prepare docs directory
         run: |
           mkdir -p docs/api
           cp -r target/doc/* docs/api/
+          # Ensure landing page and logo are in docs
+          ls -la docs/
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
