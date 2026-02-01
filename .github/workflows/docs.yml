@@ -44,8 +44,9 @@ jobs:
 
       - name: Prepare docs directory
         run: |
-          mkdir -p docs/api
+          mkdir -p docs/api docs/book
           cp -r target/doc/* docs/api/
+          cp -r target/book/* docs/book/
           # Ensure landing page and logo are in docs
           ls -la docs/
 
